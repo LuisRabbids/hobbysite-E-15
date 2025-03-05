@@ -3,7 +3,7 @@ from .views import forum_list, forum_detail
 
 urlpatterns = [
     path('', forum_list, name="forum-list"),
-    path('forum/<slug:slug>/', forum_detail, name='forum-detail')
+    path('<slug:slug>/', forum_detail, name='forum-detail')
 ]
 
 app_name = 'forum'
