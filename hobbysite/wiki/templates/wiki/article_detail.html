@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.title }}</title>
+</head>
+<body>
+    <h1>{{ article.title }}</h1>
+    <p>Category: {{ article.category }}</p>
+    <p>{{ article.entry }}</p>
+    <p>Created On: {{ article.created_on }}</p>
+    <p>Last Updated: {{ article.updated_on }}</p>
+    <a href="{% url 'article_list' %}">Back to Articles</a>
+</body>
+</html>
