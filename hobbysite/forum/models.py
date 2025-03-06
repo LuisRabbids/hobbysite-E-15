@@ -22,9 +22,10 @@ class Post(models.Model):
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.title} ({self.category.name if self.category else 'No Category'})"
 
     class Meta:
-        ordering = ['-created_on']  # posts sorted by date it was created, in descending order
+        # posts sorted by date it was created, in descending order
+        ordering = ['-created_on']
