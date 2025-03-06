@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.title }}</title>
+</head>
+<body>
+    <h1>{{ article.title }}</h1>
+    <h2>Category: {{ article.category }}</h2>
+    <h3>{{ article.entry }}</h3>
+    <h4>Created On: {{ article.created_on }}</h4>
+    <h5>Last Updated: {{ article.last_updated }}</h5>
+    <!-- IMPORTANT! To make sure that the right link gets displayed. Place the appname before the 
+     field it must access! -->
+    <h6><a href="{% url 'blog:article_list' %}">Back to Blog Articles</a></h6>
+</body>
+</html>
