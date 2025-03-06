@@ -23,7 +23,6 @@ class Post(models.Model):
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -32,9 +31,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
-    def get_slug(self):
-        return slugify(self.title)
     
     def __str__(self):
         return f"{self.title} ({self.category.name if self.category else 'No Category'})"
