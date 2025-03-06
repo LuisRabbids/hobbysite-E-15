@@ -10,6 +10,6 @@ def forum_list(request):
     return render(request, "forum/forum_list.html", ctx)
 
 
-def forum_detail(request, slug):
-    ctx = {'post': Post.objects.get(slug=slug)}
+def forum_detail(request, id):
+    ctx = {'post': Post.objects.get(id=id)}
     return render(request, 'forum/forum_detail.html', ctx)
