@@ -12,11 +12,12 @@ class CommissionCategory(models.Model):
 class Commission(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey(
-        ArticleCategory,
+        CommissionCategory,
         null=True,
         on_delete=models.SET_NULL)
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)  # Only set on creation
+    last_updated = models.DateTimeField(auto_now=True) # Updates with modification date
 
     class Meta:
         ordering = ['-created_on']  # Sorted by commission creation date in descending order
