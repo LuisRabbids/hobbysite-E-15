@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <p><strong>Type:</strong> {{ product.product_type }}</p>
+    <p><strong>Price:</strong> ₱{{ product.price }}</p>
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <a href="{% url 'merchstore:product-list' %}">Back to All Products</a>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Products</title>
+</head>
+<body>
+    <h1>All Products</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <a href="{% url 'merchstore:product-detail' product.pk %}">
+                    {{ product.name }} - ${{ product.price }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
