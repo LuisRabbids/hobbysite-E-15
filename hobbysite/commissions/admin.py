@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import Commission, CommissionCategory
 
-# Register your models here.
+class CommissionAdmin(admin.ModelAdmin):
+    model = Commission
+
+class CommissionCategoryAdmin(admin.ModelAdmin):
+    model = CommissionCategory
+
+admin.site.register(CommissionCategory)
+admin.site.register(Commission)
