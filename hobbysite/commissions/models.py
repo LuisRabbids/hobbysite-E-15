@@ -4,7 +4,7 @@ class CommissionCategory(models.Model):
     name = models.CharField(max_length=50)
 
     class Meta:
-        ordering = ['name']  # SOrted by category name in ascending order
+        ordering = ['name']  # Sorted by category name in ascending order
 
     def __str__(self):
         return self.name
