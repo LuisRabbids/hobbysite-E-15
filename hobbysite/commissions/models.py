@@ -12,7 +12,7 @@ class CommissionCategory(models.Model):
 class Commission(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey(
-        ArticleCategory,
+        CommissionCategory,
         null=True,
         on_delete=models.SET_NULL)
     entry = models.TextField()
