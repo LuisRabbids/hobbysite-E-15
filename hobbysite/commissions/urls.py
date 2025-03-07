@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import index
+from .views import commissions_list, commission_detail
 
 urlpatterns = [
-    path('commissions/', views.commissions_list, name='commissions_list')
-    path('commission/<int:commission_id>/', views.commission_detail, name='commission_detail')
+    path('/commissions/list', views.commissions_list, name='commissions_list')
+    path('/commissions/detail/1', views.commission_detail, name='commission_detail')
 ]

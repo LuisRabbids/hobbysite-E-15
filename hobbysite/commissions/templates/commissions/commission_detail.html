@@ -4,10 +4,12 @@
 </head>
 <body>
     <h1>{{ commission.title }}</h1>
-    <p>Type: {{ commission.category }}</p>
-    <p>{{ commission.entry }}</p>
+    <p>People Required: {{ commission.people_required }}</p>
+    <p>{{ commission.description }}</p>
     <p>Created On: {{ commission.created_on }}</p>
     <p>Last Updated: {{ commission.updated_on }}</p>
+    <h2>Comments</h2>
+    <p> </p>
     <a href="{% url 'commission_list' %}">Back to the Commissions List</a>
 </body>
 </html>
