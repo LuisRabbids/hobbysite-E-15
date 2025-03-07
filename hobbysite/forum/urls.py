@@ -7,4 +7,5 @@ urlpatterns = [
     path('thread/<int:id>/', forum_detail, name='forum-detail'),
 ]
 
+
 app_name = 'forum'
