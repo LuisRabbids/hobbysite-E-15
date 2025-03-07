@@ -5,10 +5,11 @@
     <body>
         <h1>Commissions List</h1>
         <ul>
+            {% for commission in commission %}
             <li>
-                <h2>Commission Type: {{ commission.category }}</h2>
-                <a href="{% url 'commission_detail' commission.id %}">{{ commission.title }}</a> 
+                <a href="{% url 'commission_detail' commission.id %}">{{ commission.title }} (People Required: {{ commission.people_required }})</a> 
             </li>
+            {% endfor %}
         </ul>
     </body>
 </html>

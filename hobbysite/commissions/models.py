@@ -10,7 +10,7 @@ class Comment(models.Model):
     updated_on = models.DateTimeField(auto_now=True) # Updates with modification date
 
     class Meta:
-        ordering = ['-created_on']  # Sorted by category name in descending order
+        ordering = ['-created_on']  # Sorted by comment creation date in descending order
 
     def __str__(self):
         return self.name
