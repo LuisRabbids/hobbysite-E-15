@@ -16,13 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
+from .views import homepage # Import the new homepage view
+from django.conf import settings # For media files
+from django.conf.urls.static import static # For media files
 
 urlpatterns = [
+    path('', homepage, name='homepage'),  # Homepage at root
+    path('accounts/', include('django.contrib.auth.urls')),  # Django auth URLs (login, logout, password reset etc.)
+    # Your app URLs
     path('merchstore/', include('merchstore.urls')),
-    path('wiki/', include('wiki.urls')),
+    path('wiki/', include(('wiki.urls', 'wiki'), namespace='wiki')),  # Added namespace
     path('blog/', include('blog.urls')),
     path('forum/', include('forum.urls')),
     path('commissions/', include('commissions.urls')),
     path('admin/', admin.site.urls),
 ]
+# For serving media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
