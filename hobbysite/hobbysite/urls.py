@@ -20,9 +20,16 @@ from .views import homepage # Import the new homepage view
 from django.conf import settings # For media files
 from django.conf.urls.static import static # For media files
 
+from django.contrib import admin
+from django.urls import include, path
+from .views import homepage, register # Add register
+
 urlpatterns = [
     path('', homepage, name='homepage'),  # Homepage at root
+
     path('accounts/', include('django.contrib.auth.urls')),  # Django auth URLs (login, logout, password reset etc.)
+    path('accounts/register/', register, name='register'),
+    path('accounts/', include('django.contrib.auth.urls')),
     # Your app URLs
     path('merchstore/', include('merchstore.urls')),
     path('wiki/', include(('wiki.urls', 'wiki'), namespace='wiki')),  # Added namespace
