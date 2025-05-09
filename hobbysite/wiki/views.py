@@ -8,41 +8,28 @@ from .models import Article, ArticleCategory, Comment
 from .forms import ArticleForm, CommentForm
 from django.db.models import Q, Prefetch
 
+# wiki/views.py
+
+# ... (other imports and views) ...
+
 class ArticleListView(ListView):
     model = Article
     template_name = 'wiki/article_list.html'
-    context_object_name = 'articles' 
+    context_object_name = 'articles' # This isn't directly used if you rely on categories_with_articles
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # print(f"User: {self.request.user}, Authenticated: {self.request.user.is_authenticated}") # Debug
 
-        all_articles_qs = Article.objects.select_related('category', 'author').all()
-        user_articles = []
+        # Always fetch all articles for category grouping
+        all_articles_for_grouping_qs = Article.objects.select_related('author', 'category').all()
 
-        articles_for_categories_qs = Article.objects.select_related('author', 'category').all()
-
-        if self.request.user.is_authenticated:
-            user_articles = all_articles_qs.filter(author=self.request.user)
-            # Exclude user's articles from the general list to be grouped by category
-            articles_for_categories_qs = articles_for_categories_qs.exclude(author=self.request.user)
-
-        # Group articles by category for the "All Articles" section
         categories_with_articles = ArticleCategory.objects.prefetch_related(
             Prefetch(
-                'articles', # This is the related_name from ArticleCategory to Article
-                            # If you set related_name="articles" on Article.category field, this is correct.
-                queryset=articles_for_categories_qs
+                'articles', # Assumes Article.category has related_name='articles' or you use article_set
+                queryset=all_articles_for_grouping_qs
             )
-        ).distinct()
+        ).distinct().order_by('name') # Order categories by name
 
-        # print(f"User Articles: {user_articles}") # Debug
-        # print(f"Categories with Articles: {categories_with_articles}") # Debug
-        # for cat in categories_with_articles: # Debug
-        # print(f"  Category: {cat.name}, Articles: {cat.articles.all()}") # Debug
-
-
-        context['user_articles'] = user_articles
         context['categories_with_articles'] = categories_with_articles
         context['create_article_url'] = reverse_lazy('wiki:article_create')
         return context
