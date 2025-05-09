@@ -19,9 +19,6 @@ from django.urls import include, path
 from .views import homepage # Import the new homepage view
 from django.conf import settings # For media files
 from django.conf.urls.static import static # For media files
-
-from django.contrib import admin
-from django.urls import include, path
 from .views import homepage, register # Add register
 
 # hobbysite/urls.py

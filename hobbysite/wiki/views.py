@@ -11,7 +11,7 @@ from django.db.models import Q, Prefetch
 class ArticleListView(ListView):
     model = Article
     template_name = 'wiki/article_list.html'
-    context_object_name = 'articles' # Changed from 'articles' for clarity if you were using object_list
+    context_object_name = 'articles' 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

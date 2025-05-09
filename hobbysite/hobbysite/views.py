@@ -5,14 +5,11 @@ from django.contrib import messages # For registration messages
 
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm # Import your new form
-from django.contrib import messages
 
 def homepage(request):
-    # You can add context here if needed later, e.g., links to apps
     context = {} # Add any data you want to pass to the template here
     return render(request, 'homepage.html', context)
 
-# If you are adding the registration view here:
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST) # Using a basic form for now
