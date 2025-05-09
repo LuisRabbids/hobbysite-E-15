@@ -3,31 +3,47 @@
 <head>
     <title>Hobby Site - {% block title %}Welcome{% endblock %}</title>
     <style>
-        /* Basic styles for messages if you want to define them here for now */
+        /* Basic styles for messages */
         .message {
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
+            list-style-type: none; /* Ensure list bullets are not shown for messages */
         }
-        .message.success {
+        .message.success { /* Django uses 'success' tag for messages.SUCCESS */
             border-color: green;
             background-color: #e6ffe6;
             color: darkgreen;
         }
-        .message.error {
+        .message.error { /* Django uses 'error' tag for messages.ERROR */
             border-color: red;
             background-color: #ffe6e6;
             color: darkred;
         }
-        .message.info {
+        .message.info { /* Django uses 'info' tag for messages.INFO */
             border-color: blue;
             background-color: #e6e6ff;
             color: darkblue;
         }
-        .message.warning {
+        .message.warning { /* Django uses 'warning' tag for messages.WARNING */
             border-color: orange;
             background-color: #fff0e6;
             color: #cc6600;
+        }
+
+        /* Style for the logout button to make it look like a link */
+        .logout-button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: blue; /* Or your preferred link color */
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: inherit; /* Inherit font from parent */
+            font-size: inherit;   /* Inherit font size from parent */
+        }
+        .logout-button:hover {
+            color: darkblue; /* Optional: Hover effect */
         }
     </style>
 </head>
@@ -38,7 +54,12 @@
             <p>
                 {% if user.is_authenticated %}
                     Hi {{ user.username }}!
-                    <a href="{% url 'logout' %}">Logout</a>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">
+                            Logout
+                        </button>
+                    </form>
                 {% else %}
                     <a href="{% url 'login' %}">Login</a> |
                     <a href="{% url 'register' %}">Register</a>
@@ -66,10 +87,8 @@
         <hr>
 
         {% if messages %}
-            <ul class="messages-container" style="list-style-type: none; padding: 0;">
+            <ul class="messages-container" style="padding: 0;"> {# Removed list-style-type from here as it's on .message now #}
                 {% for message in messages %}
-                    {# Django messages have tags like "success", "error", "info", "warning" #}
-                    {# These tags correspond to constants: messages.SUCCESS (25), messages.ERROR (40), etc. #}
                     <li class="message {{ message.tags }}">
                         {{ message }}
                     </li>
