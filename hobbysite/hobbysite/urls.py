@@ -30,6 +30,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # Django auth URLs (login, logout, password reset etc.)
     path('accounts/register/', register, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
+    
     # Your app URLs
     path('merchstore/', include('merchstore.urls')),
     path('wiki/', include(('wiki.urls', 'wiki'), namespace='wiki')),  # Added namespace
