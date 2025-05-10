@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 # class for Article Category. Just a simple text field
@@ -28,4 +30,21 @@ class Article (models.Model):
         
     def __str__(self):
         return self.title
+    
+class Comment (models.Model):
+    #TODO: THE REST OF THIS STUFF 
+
+    article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'article_title')
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='name')
+    
+    entry = models.TextField()
+    # Gets made only once, when the model is created
+    created_on = models.DateTimeField(auto_now_add=True)
+    # Refreshes with any changes made.
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # Sorted by the date it was created, in ascending order, oldest first.
+        ordering = ['created_on']
+
     
