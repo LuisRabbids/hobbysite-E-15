@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'wiki',
+    'blog',
+    'forum',
+    'commissions',
 
 ]
 
@@ -85,6 +88,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# Temp measure till we get an actual unified login-logout page
+LOGIN_REDIRECT_URL = "/blog/articles"
+LOGOUT_REDIRECT_URL = "/accounts/login"
 
 
 # Password validation

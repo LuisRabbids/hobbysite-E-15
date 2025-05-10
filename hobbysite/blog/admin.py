@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import ArticleCategory, Article
+from blog.models import ArticleCategory, Article, Comment
 
 # Not necessary according to specs, but helps in organizing entries
 class ArticleAdmin(admin.ModelAdmin):
@@ -7,4 +7,5 @@ class ArticleAdmin(admin.ModelAdmin):
 
 admin.site.register(ArticleCategory)
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(Comment)
 

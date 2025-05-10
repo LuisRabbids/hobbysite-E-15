@@ -9,6 +9,18 @@
     <h3>{{ article.entry }}</h3>
     <h4>Created On: {{ article.created_on }}</h4>
     <h5>Last Updated: {{ article.last_updated }}</h5>
+
+    {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+            <button type="submit">Logout</button>
+            </form>
+    {% else %}
+        <a href="{% url 'blog:login' %}">Login </a>
+    {% endif %}
+
+
     <!-- IMPORTANT! To make sure that the right link gets displayed. Place the appname before the 
      field it must access! -->
     <h6><a href="{% url 'blog:article_list' %}">Back to Blog Articles</a></h6>
