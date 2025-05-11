@@ -6,6 +6,9 @@
 <body>
     <h1>Blog Articles</h1>
     <ul>
+      {% if user.is_authenticated %}
+      <a href ="{% url 'blog:add' %}"> Add New Article</a>
+      {% endif %}
       {% for article in articles %}
         <li>
           <h2>Category: {{ article.category }} </h2>

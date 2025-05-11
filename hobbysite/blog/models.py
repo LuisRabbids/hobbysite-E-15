@@ -22,6 +22,8 @@ class Article (models.Model):
     category = models.ForeignKey(ArticleCategory, null =True, on_delete=models.SET_NULL) # Connects it to the Article Category class
     entry = models.TextField()
 
+    headerImage = models.ImageField(upload_to='images/', default=None) # Image for the header.
+
     created_on = models.DateTimeField(auto_now_add = True) # Gets made only once, when the model is created
     last_updated = models.DateTimeField(auto_now= True) # Refreshes with any changes made.
 
