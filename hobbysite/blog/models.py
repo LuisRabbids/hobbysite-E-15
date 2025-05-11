@@ -22,7 +22,10 @@ class Article (models.Model):
     category = models.ForeignKey(ArticleCategory, null =True, on_delete=models.SET_NULL) # Connects it to the Article Category class
     entry = models.TextField()
 
-    headerImage = models.ImageField(upload_to='images/', default=None) # Image for the header.
+    headerImage = models.ImageField(upload_to='blog_header_images/', null= True, blank = True, default = None) # Image for the header.
+    #TODO All the other associated stuff. Go to settings and stuff.
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_articles')
+    
 
     created_on = models.DateTimeField(auto_now_add = True) # Gets made only once, when the model is created
     last_updated = models.DateTimeField(auto_now= True) # Refreshes with any changes made.
@@ -36,8 +39,8 @@ class Article (models.Model):
 class Comment (models.Model):
     #TODO: THE REST OF THIS STUFF 
 
-    article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'article_title')
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='name')
+    article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'comments')
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_comments')
     
     entry = models.TextField()
     # Gets made only once, when the model is created
