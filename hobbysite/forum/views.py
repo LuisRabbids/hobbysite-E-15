@@ -22,7 +22,7 @@ def thread_list(request):
 
     context = {
         'user_threads': user_threads,
-        'categorized_threads': categorized_threads
+        'categorized_threads': categorized_threads,
     }
     return render(request, 'forum/thread_list.html', context)
 

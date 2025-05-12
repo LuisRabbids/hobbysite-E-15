@@ -4,7 +4,7 @@
 <h2>Your Threads</h2>
 <ul>
   {% for thread in user_threads %}
-    <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a></li>
+    <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }} </li>
   {% empty %}
     <li>You haven't created any threads yet.</li>
   {% endfor %}
@@ -15,7 +15,7 @@
   <h3>{{ category.name }}</h3>
   <ul>
     {% for thread in threads %}
-      <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a></li>
+      <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }} </li>
     {% empty %}
       <li>No threads in this category.</li>
     {% endfor %}
