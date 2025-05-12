@@ -7,20 +7,27 @@
     <h1>{{ article.title }}</h1>
     <h2>Category: {{ article.category }}</h2>
     <h3>{{ article.entry }}</h3>
-    <h4>Created On: {{ article.created_on }}</h4>
-    <h5>Last Updated: {{ article.last_updated }}</h5>
+    <h3>Author:{{article.author}}</h3>
+    <h3>Created On: {{ article.created_on }}</h3>
+    <h3>Last Updated: {{ article.last_updated }}</h3>
 
-    <h2>{{article.headerImage}}</h2>
-    <img src="{{ article.headerImage }}" alt="">
 
-    {% if user.is_authenticated %}
-
-    {% for comment in comments %}
-    <h4>Comment from :{{ comment.author }}</h4>
-    <h4>{{ comment.entry }}</h4>
-    {% endfor %}   
+    {% if article.headerImage %}
+        <img src="{{ article.headerImage.url }}" style="max-width: 500px; height: auto;">
+    {% else %}
+        <p><em>No image available for this article.</em></p>
     {% endif %}
 
+    {% if comment.article == article.title %}
+    
+        {% for comment in comments %}
+            <h4>Comment from :{{ comment.author }}</h4>
+            <h4>{{ comment.entry }}</h4>
+        {% endfor %}
+    {% else %}
+
+    <p> No Comments yet.</p>   
+    {% endif %}
 
 
     {% if user.is_authenticated %}
@@ -33,6 +40,9 @@
         <a href="{% url 'blog:login' %}">Login </a>
     {% endif %}
 
+    {% if user.is_authenticated and user == article.author %}
+    |   <a href="{% url 'blog:edit' pk=article.pk %}">Edit Article</a>
+    {% endif %}
    
         
     <!-- IMPORTANT! To make sure that the right link gets displayed. Place the appname before the 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
-from blog.models import Article
+from blog.models import Article, Comment
 from django.views.generic import DetailView, CreateView, UpdateView, ListView
 from .forms import ArticleForm
 
@@ -33,6 +33,10 @@ class CreateArticle(CreateView):
     form_class = ArticleForm
     def get_success_url(self):
         return reverse_lazy('blog:article_list')
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user # Set author to logged-in user
+        return super().form_valid(form)
     
 class EditArticle(UpdateView):
     model = Article
