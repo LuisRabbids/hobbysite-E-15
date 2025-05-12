@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block page_title %}{{ thread.title }} | Hobby Site{% endblock %}
+
 {% block main %}
 <h2>{{ thread.title }}</h2>
 <p><strong>Category:</strong> {{ thread.category }}</p>
