@@ -3,7 +3,9 @@
 {% block main %}
 <h2>{{ thread.title }}</h2>
 <p><strong>Category:</strong> {{ thread.category }}</p>
+<p><strong>By:</strong> {{ thread.author.display_name }} on {{ thread.created_at|date:"F j, Y, g:i A" }}</p>
 <p>{{ thread.entry }}</p>
+
 {% if thread.image %}
   <img src="{{ thread.image.url }}" alt="Thread Image">
 {% endif %}
@@ -24,7 +26,12 @@
 <h3>Comments</h3>
 <ul>
   {% for comment in comments %}
-    <li><strong>{{ comment.author }}</strong>: {{ comment.entry }}</li>
+    <li>
+      <p>{{ comment.entry }}</p>
+      <p style="margin-left: 1em;">
+        - {{ comment.author.display_name }} on {{ comment.created_on|date:"F j, Y, g:i A" }}
+      </p>
+    </li>
   {% empty %}
     <li>No comments yet.</li>
   {% endfor %}
