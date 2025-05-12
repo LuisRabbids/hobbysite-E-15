@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from .models import Profile
@@ -16,8 +16,7 @@ def update_profile(request, display_name):
         form = ProfileUpdateForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            # reload with saved data
-            form = ProfileUpdateForm(instance=profile)
+            return redirect('user_management:update_profile', display_name=form.instance.display_name)
     else:
         form = ProfileUpdateForm(instance=profile)
 

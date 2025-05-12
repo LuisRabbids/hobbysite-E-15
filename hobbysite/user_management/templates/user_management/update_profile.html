@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block page_title %}Update Profile{% endblock %}
+
+{% block main %}
   <h2>Update Profile</h2>
+
+  <!-- Show the current display name -->
+  <p>Your current display name is: <strong>{{ form.instance.display_name }}</strong></p>
+
+  <!-- Display the form for editing the display name -->
   <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Changes</button>
   </form>
+
+  {% if form.instance.display_name != form.initial.display_name %}
+    <p>Your display name has been updated to: <strong>{{ form.instance.display_name }}</strong></p>
+  {% endif %}
 {% endblock %}

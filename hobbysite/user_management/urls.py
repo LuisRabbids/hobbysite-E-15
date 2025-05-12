@@ -2,7 +2,7 @@ from django.urls import path
 from .views import update_profile
 
 urlpatterns = [
-    path('profile/<str:username>/', update_profile, name='update_profile'),
+    path('<str:display_name>/', update_profile, name='update_profile'),
 ]
 
 
