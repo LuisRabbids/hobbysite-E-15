@@ -10,7 +10,18 @@
     <h4>Created On: {{ article.created_on }}</h4>
     <h5>Last Updated: {{ article.last_updated }}</h5>
 
-    {{ article.headerImage}}
+    <h2>{{article.headerImage}}</h2>
+    <img src="{{ article.headerImage }}" alt="">
+
+    {% if user.is_authenticated %}
+
+    {% for comment in comments %}
+    <h4>Comment from :{{ comment.author }}</h4>
+    <h4>{{ comment.entry }}</h4>
+    {% endfor %}   
+    {% endif %}
+
+
 
     {% if user.is_authenticated %}
             <form method="POST" action="{% url 'logout' %}">
@@ -22,10 +33,7 @@
         <a href="{% url 'blog:login' %}">Login </a>
     {% endif %}
 
-     {% if user.is_authenticated %}
-    <h4>Comment from :{{ comment.author }}</h4>
-    <h4>{{ comment.entry }}</h4>
-    {% endif %}
+   
         
     <!-- IMPORTANT! To make sure that the right link gets displayed. Place the appname before the 
      field it must access! -->

@@ -22,8 +22,8 @@ class Article (models.Model):
     category = models.ForeignKey(ArticleCategory, null =True, on_delete=models.SET_NULL) # Connects it to the Article Category class
     entry = models.TextField()
 
-    headerImage = models.ImageField(upload_to='blog_header_images/', null= True, blank = True, default = None) # Image for the header.
-    #TODO All the other associated stuff. Go to settings and stuff.
+    headerImage = models.ImageField(upload_to='media/blog_header_images', null= True, blank = True, default = None) # Image for the header.
+    #TODO All the other associated stuff. Might have to edit though
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_articles')
     
 
@@ -37,7 +37,6 @@ class Article (models.Model):
         return self.title
     
 class Comment (models.Model):
-    #TODO: THE REST OF THIS STUFF 
 
     article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'comments')
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_comments')
