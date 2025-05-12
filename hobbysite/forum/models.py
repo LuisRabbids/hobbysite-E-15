@@ -1,31 +1,61 @@
 from django.db import models
+from user_management.models import Profile
 
 
-class PostCategory(models.Model):
+class ThreadCategory(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
+
+    class Meta:
+        ordering = ['name']  # Sorted by name ascending
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['name']  # categories sorted by name in ascending order
 
-
-class Post(models.Model):
+class Thread(models.Model):
     title = models.CharField(max_length=255)
-    category = models.ForeignKey(
-        PostCategory,
+    author = models.ForeignKey(
+        Profile,
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True
+    )
+    category = models.ForeignKey(
+        ThreadCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    entry = models.TextField()
+    image = models.ImageField(upload_to='images/forum_images/', blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_on']  # Newest first
+
+    def __str__(self):
+        return self.title
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    thread = models.ForeignKey(
+        Thread,
+        on_delete=models.CASCADE
     )
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.title} ({self.category.name if self.category else 'No Category'})"
-
     class Meta:
-        # posts sorted by date it was created, in descending order
-        ordering = ['-created_on']
+        ordering = ['created_on']  # Oldest first
+
+    def __str__(self):
+        return f"Comment by {self.author} on {self.thread}"
