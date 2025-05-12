@@ -1,4 +1,5 @@
 from django.db import models
+from user_management.models import Profile
 
 class ProductType(models.Model):
     name = models.CharField(max_length=255)
@@ -13,9 +14,14 @@ class ProductType(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     product_type = models.ForeignKey(
-        ProductType, on_delete=models.SET_NULL, null=True)
+        ProductType,
+        on_delete=models.SET_NULL,
+        null=True
+    )
     owner = models.ForeignKey(
-        Profile, on_delete=models.CASCADE)
+        Profile,
+        on_delete=models.CASCADE
+    )
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
@@ -41,9 +47,16 @@ class Product(models.Model):
 
 class Transaction(models.Model):
     buyer = models.ForeignKey(
-        Profile, on_delete=models.SET_NULL, null=True, related_name='purchases')
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='purchases'
+    )
     product = models.ForeignKey(
-        Product, on_delete=models.SET_NULL, null=True)
+        Product,
+        on_delete=models.SET_NULL,
+        null=True
+    )
     amount = models.PositiveIntegerField()
     STATUS_CHOICES = [
       ('on_cart','On cart'),
