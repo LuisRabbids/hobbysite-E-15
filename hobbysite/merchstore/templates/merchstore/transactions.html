@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>Sales Transactions</title>
+</head>
+<body>
+    <h1>Sales Transactions</h1>
+    <ul>
+        {% for t in object_list %}
+            <li>
+                {{ t.buyer.display_name }} bought {{ t.amount }} of
+                <a href="{% url 'merchstore:product-detail' t.product.id %}">{{ t.product.name }}</a>
+                — {{ t.get_status_display }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
