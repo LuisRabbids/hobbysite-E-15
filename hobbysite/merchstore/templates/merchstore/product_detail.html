@@ -7,7 +7,7 @@
   <p>{{ product.description }}</p>
   <p>₱{{ product.price }} — {{ product.stock }} left</p>
   <p>Type: {{ product.product_type.name }}</p>
-  <p>Status: {{ product.status }}</p>
+  <p>Status: {{ product.get_status_display }}</p>
 
   {% if is_owner %}
     <p><a href="{% url 'merchstore:product-edit' product.id %}">Edit Product</a></p>
