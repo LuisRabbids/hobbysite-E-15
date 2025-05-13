@@ -1,16 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
-    <title>All Products</title>
+    <title>Merch Store – All Products</title>
 </head>
 <body>
-    <h1>All Products</h1>
+    <h1>My Products</h1>
+    {% if user_items %}
     <ul>
-        {% for product in products %}
+        {% for p in user_items %}
             <li>
-                <a href="{% url 'merchstore:product-detail' product.pk %}">
-                    {{ product.name }} - ${{ product.price }}
-                </a>
+                <a href="{% url 'merchstore:product-detail' p.id %}">{{ p.name }}</a>
+                (<a href="{% url 'merchstore:product-edit' p.id %}">Edit</a>)
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h1>All Products</h1>
+    <p><a href="{% url 'merchstore:product-add' %}">Add New Product</a></p>
+    <ul>
+        {% for product in object_list %}
+            <li>
+                <a href="{% url 'merchstore:product-detail' product.id %}">{{ product.name }}</a>
+                – ${{ product.price }}
             </li>
         {% endfor %}
     </ul>
