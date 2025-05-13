@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views import view_function, CreateArticle, EditArticle, ArticlesListView, ArticleDetailView
 
+
 urlpatterns = [
     path('articles/', ArticlesListView.as_view(), name='article_list'),
     path('article/<int:pk>/', ArticleDetailView.as_view(), name='article_detail'),

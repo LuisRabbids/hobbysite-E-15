@@ -14,16 +14,40 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from .views import homepage # Import the new homepage view
+from django.conf import settings # For media files
+from django.conf.urls.static import static # For media files
+from .views import homepage, register # Add register
+
+# hobbysite/urls.py
+
+"""
+URL configuration for hobbysite project.
+"""
+from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.conf import settings
+from django.conf.urls.static import static
+
+from .views import homepage, register  # Assuming these exist in hobbysite/views.py
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', homepage, name='homepage'),  # If you want the homepage view at root
+    path('register/', register, name='register'),  # If register is a view
+    path('merchstore/', include('merchstore.urls')),
     path('wiki/', include('wiki.urls')),
     path('blog/', include('blog.urls')),
+    path('forum/', include('forum.urls')),
+    path('commissions/', include('commissions.urls')),
+    path('profile/', include('user_management.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('admin/', admin.site.urls),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
