@@ -1,2 +1,0 @@
-SECRET_KEY='django-insecure-l#r60$0w%qwyr0*v(be!nu#dwu9ne3$u^*^)l$qlecpn)^)r(z'
-STATIC_ROOT='<folder path of where static items>'
