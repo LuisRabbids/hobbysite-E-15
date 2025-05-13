@@ -1,13 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
-    <title>{{ product.name }}</title>
+    <title>{{ object.name }} – Details</title>
 </head>
 <body>
-    <h1>{{ product.name }}</h1>
-    <p><strong>Type:</strong> {{ product.product_type }}</p>
-    <p><strong>Price:</strong> ₱{{ product.price }}</p>
-    <p><strong>Description:</strong> {{ product.description }}</p>
-    <a href="{% url 'merchstore:product-list' %}">Back to All Products</a>
+    <h1>{{ object.name }}</h1>
+    <p>Type: {{ object.product_type.name }}</p>
+    <p>Price: ${{ object.price }}</p>
+    <p>Description: {{ object.description }}</p>
+    <p>Stock: {{ object.stock }}</p>
+    <p>Status: {{ object.get_status_display }}</p>
+
+    {% if user.is_authenticated %}
+        {% if object.owner != user.profile and object.stock > 0 %}
+            <form method="post">
+                {% csrf_token %}
+                <label for="id_amount">Quantity:</label>
+                <input type="number" name="amount" id="id_amount" min="1" max="{{ object.stock }}">
+                <button type="submit">Buy</button>
+            </form>
+        {% elif object.stock == 0 %}
+            <button disabled>Out of Stock</button>
+        {% endif %}
+
+        {% if object.owner == user.profile %}
+            <p><a href="{% url 'merchstore:product-edit' object.id %}">Edit This Product</a></p>
+        {% endif %}
+    {% else %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">Log in to buy</a></p>
+    {% endif %}
 </body>
 </html>
