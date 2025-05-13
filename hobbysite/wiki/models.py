@@ -25,7 +25,7 @@ class Article(models.Model):
     )
     entry = models.TextField()
     header_image = models.ImageField(
-        upload_to='wiki_header_images/', null=True, blank=True 
+        upload_to='images/wiki_images/', null=True, blank=True 
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
