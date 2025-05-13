@@ -30,15 +30,14 @@ URL configuration for hobbysite project.
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.conf import settings       # For media files
-from django.conf.urls.static import static # For media files
+from django.conf import settings
+from django.conf.urls.static import static
 
-# Import your project-level views (homepage, register)
-# Assuming they are in hobbysite/views.py (same directory as this urls.py)
-from .views import homepage, register
+from .views import homepage, register  # Assuming these exist in hobbysite/views.py
 
 urlpatterns = [
-<<<<<<< HEAD
+    path('', homepage, name='homepage'),  # If you want the homepage view at root
+    path('register/', register, name='register'),  # If register is a view
     path('merchstore/', include('merchstore.urls')),
     path('wiki/', include('wiki.urls')),
     path('blog/', include('blog.urls')),
@@ -50,27 +49,3 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-=======
-    path('', homepage, name='homepage'),  # Homepage at root
-
-    # Authentication URLs
-    # The django.contrib.auth.urls includes: login, logout, password_change, password_reset etc.
-    # It's good practice to put custom auth URLs (like register) before including the defaults
-    # if there's any potential for overlap or if you want a specific order.
-    path('accounts/register/', register, name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),
-
-    # Your app URLs
-    # path('merchstore/', include('merchstore.urls')), # Assuming you have this app
-    path('wiki/', include(('wiki.urls', 'wiki'), namespace='wiki')),
-    # path('blog/', include('blog.urls')),             # Assuming you have this app
-    # path('forum/', include('forum.urls')),           # Assuming you have this app
-    # path('commissions/', include('commissions.urls')), # Assuming you have this app
-
-    path('admin/', admin.site.urls),
-]
-
-# For serving media files during development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
->>>>>>> wiki
