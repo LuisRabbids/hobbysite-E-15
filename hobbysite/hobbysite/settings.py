@@ -47,9 +47,6 @@ INSTALLED_APPS = [
     'blog',
     'forum',
     'commissions',
-    'blog',
-    'forum',
-    'commissions',
     'accounts',
     'user_management',
 ]
