@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Forum Threads | Hobby Site{% endblock %}
+
+{% block main %}
+<h2>Your Threads</h2>
+<ul>
+  {% for thread in user_threads %}
+    <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }} </li>
+  {% empty %}
+    <li>You haven't created any threads yet.</li>
+  {% endfor %}
+</ul>
+
+<h2>All Threads</h2>
+{% for category, threads in categorized_threads.items %}
+  <h3>{{ category.name }}</h3>
+  <ul>
+    {% for thread in threads %}
+      <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }} </li>
+    {% empty %}
+      <li>No threads in this category.</li>
+    {% endfor %}
+  </ul>
+{% endfor %}
+
+<a href="{% url 'forum:thread-create' %}">Create a new thread</a>
+{% endblock %}

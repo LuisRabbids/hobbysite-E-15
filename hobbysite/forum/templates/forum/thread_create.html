@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Create New Thread | Hobby Site{% endblock %}
+
+{% block main %}
+<h2>Create a New Thread</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+<a href="{% url 'forum:thread-list' %}">Back to Threads</a>
+{% endblock %}
