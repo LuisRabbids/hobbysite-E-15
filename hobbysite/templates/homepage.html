@@ -73,17 +73,12 @@
     <main>
         <nav>
             <h2>Our Apps:</h2>
-            <ul>
-                <li><a href="{% url 'wiki:article_list' %}">Wiki</a></li>
-                <li><a href="{% url 'forum:thread-list' %}">Forum</a></li>
-                <!--
-                <li><a href="#">Merchandise Store (Coming Soon)</a></li>
-                <li><a href="#">Blog (Coming Soon)</a></li>
-                <li><a href="#">Forum (Coming Soon)</a></li>
-                <li><a href="#">Commissions (Coming Soon)</a></li>
-                -->
-            </ul>
+            <p>
+                <a href="{% url 'wiki:article_list' %}">Wiki</a> |
+                <a href="{% url 'forum:thread-list' %}">Forum</a>
+            </p>
         </nav>
+        
 
         <hr>
 
