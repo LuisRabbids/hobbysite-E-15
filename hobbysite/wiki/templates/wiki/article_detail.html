@@ -1,14 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ article.title }}</title>
-</head>
-<body>
+<!-- wiki/templates/wiki/article_detail.html -->
+{% extends "homepage.html" %} 
+
+{% block content %}
     <h1>{{ article.title }}</h1>
-    <p>Category: {{ article.category }}</p>
-    <p>{{ article.entry }}</p>
-    <p>Created On: {{ article.created_on }}</p>
-    <p>Last Updated: {{ article.updated_on }}</p>
-    <a href="{% url 'article_list' %}">Back to Articles</a>
-</body>
-</html>
+    <p>
+        Category: {{ article.category.name|default:"Uncategorized" }} |
+        Author: {{ article.author.username }} |
+        Created: {{ article.created_on|date:"F d, Y H:i" }} |
+        Updated: {{ article.updated_on|date:"F d, Y H:i" }}
+    </p>
+
+    {% if article.header_image %}
+        <img src="{{ article.header_image.url }}" alt="{{ article.title }} header image" style="max-width: 500px; height: auto;">
+    {% else %}
+        <p><em>No image available for this article.</em></p>
+    {% endif %}
+
+    <hr>
+    <div>
+        {{ article.entry|linebreaksbr }} {# Use linebreaksbr to render newlines from TextField #}
+    </div>
+    <hr>
+
+    <p>
+        <a href="{{ back_to_list_url }}">Back to Article List</a>
+        {% if user.is_authenticated and user == article.author %}
+            | <a href="{% url 'wiki:article_update' pk=article.pk %}">Edit Article</a>
+        {% endif %}
+    </p>
+
+    {% if related_articles %}
+        <h3>Read More from {{ article.category.name|default:"related topics" }}:</h3>
+        <ul>
+            {% for related in related_articles %}
+                <li><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endif %}
+
+    <h3>Comments ({{ comments.count }})</h3>
+    {% if user.is_authenticated and comment_form %}
+        <h4>Add a Comment:</h4>
+        <form method="post">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit">Post Comment</button>
+        </form>
+        <hr>
+    {% elif not user.is_authenticated %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">Login</a> to post a comment.</p>
+        <hr>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p>
+                <strong>{{ comment.author.username }}</strong>
+                <small>on {{ comment.created_on|date:"F d, Y H:i" }}</small>
+            </p>
+            <p>{{ comment.entry|linebreaksbr }}</p>
+        </div>
+        {% if not forloop.last %}<hr>{% endif %}
+    {% empty %}
+        <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+
+{% endblock %}
