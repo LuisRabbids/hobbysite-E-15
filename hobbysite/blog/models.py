@@ -51,4 +51,7 @@ class Comment (models.Model):
         # Sorted by the date it was created, in ascending order, oldest first.
         ordering = ['created_on']
 
+    def __str__(self):
+        return f'Comment by {self.author.username} on {self.article.title}'
+
     
