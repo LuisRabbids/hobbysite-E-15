@@ -17,13 +17,10 @@
     {% else %}
       <p>You haven’t added any products yet.</p>
     {% endif %}
-  {% endif %}
-
-  <h2>All Products</h2>
-  {% if user.is_authenticated %}
     <p><a href="{% url 'merchstore:product-add' %}">Add New Product</a></p>
   {% endif %}
 
+  <h2>All Products</h2>
   {% if other_products %}
     <ul>
       {% for product in other_products %}

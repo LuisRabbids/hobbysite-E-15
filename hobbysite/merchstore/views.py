@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Transaction, ProductType
 from .forms import ProductForm, TransactionForm
@@ -25,24 +26,36 @@ def product_list(request):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    can_buy = (product.owner != request.user.profile and product.stock > 0)
+    user = request.user
+    user_profile = getattr(user, 'profile', None)
+    is_owner = user.is_authenticated and product.owner == user_profile
+    can_buy = user.is_authenticated and not is_owner and product.stock > 0
+
     form = TransactionForm()
 
     if request.method == 'POST':
+        if not user.is_authenticated:
+            return redirect(f'/login/?{REDIRECT_FIELD_NAME}={request.path}')
+
         form = TransactionForm(request.POST)
         if form.is_valid() and can_buy:
             trans = form.save(commit=False)
-            trans.buyer = request.user.profile
+            trans.buyer = user_profile
             trans.product = product
-            trans.save()
-            product.stock -= trans.amount
-            product.save()
-            return redirect('merchstore:cart')
+
+            if trans.amount > product.stock:
+                form.add_error('amount', 'Not enough stock available.')
+            else:
+                trans.save()
+                product.stock -= trans.amount
+                product.save()
+                return redirect('merchstore:cart')
 
     context = {
         'product': product,
         'form': form,
         'can_buy': can_buy,
+        'is_owner': is_owner,
     }
     return render(request, 'merchstore/product_detail.html', context)
 

@@ -1,31 +1,28 @@
 {% extends 'homepage.html' %}
 
-{% block title %}{{ object.name }} – Details | Merch Store{% endblock %}
+{% block title %}{{ product.name }} | Product Details{% endblock %}
 
 {% block content %}
-  <h2>{{ object.name }}</h2>
-  <p><strong>Type:</strong> {{ object.product_type.name }}</p>
-  <p><strong>Price:</strong> ${{ object.price }}</p>
-  <p><strong>Description:</strong> {{ object.description }}</p>
-  <p><strong>Stock:</strong> {{ object.stock }}</p>
-  <p><strong>Status:</strong> {{ object.get_status_display }}</p>
+  <h2>{{ product.name }}</h2>
+  <p>{{ product.description }}</p>
+  <p>₱{{ product.price }} — {{ product.stock }} left</p>
+  <p>Type: {{ product.product_type.name }}</p>
+  <p>Status: {{ product.status }}</p>
 
-  {% if user.is_authenticated %}
-    {% if object.owner != user.profile and object.stock > 0 %}
+  {% if is_owner %}
+    <p><a href="{% url 'merchstore:product-edit' product.id %}">Edit Product</a></p>
+  {% elif user.is_authenticated %}
+    {% if can_buy %}
       <form method="post">
         {% csrf_token %}
-        <label for="id_amount">Quantity:</label>
-        <input type="number" name="amount" id="id_amount" min="1" max="{{ object.stock }}">
+        {{ form.as_p }}
         <button type="submit">Buy</button>
       </form>
-    {% elif object.stock == 0 %}
-      <button disabled>Out of Stock</button>
-    {% endif %}
-
-    {% if object.owner == user.profile %}
-      <p><a href="{% url 'merchstore:product-edit' object.id %}">Edit This Product</a></p>
+    {% else %}
+      <button disabled>Buy (Unavailable)</button>
     {% endif %}
   {% else %}
-    <p><a href="{% url 'login' %}?next={{ request.path }}">Log in to buy</a></p>
+    <p><a href="{% url 'login' %}?next={{ request.path }}">Log in to buy this product</a></p>
   {% endif %}
 {% endblock %}
+
