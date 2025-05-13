@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <title>Sales Transactions</title>
-</head>
-<body>
-    <h1>Sales Transactions</h1>
-    <ul>
-        {% for t in object_list %}
-            <li>
-                {{ t.buyer.display_name }} bought {{ t.amount }} of
-                <a href="{% url 'merchstore:product-detail' t.product.id %}">{{ t.product.name }}</a>
-                — {{ t.get_status_display }}
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'homepage.html' %}
+
+{% block title %}Sales Transactions | Merch Store{% endblock %}
+
+{% block content %}
+  <h2>Sales Transactions</h2>
+  <ul>
+    {% for t in object_list %}
+      <li>
+        {{ t.buyer.display_name }} bought {{ t.amount }} of
+        <a href="{% url 'merchstore:product-detail' t.product.id %}">{{ t.product.name }}</a>
+        — {{ t.get_status_display }}
+      </li>
+    {% empty %}
+      <li>No transactions found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
