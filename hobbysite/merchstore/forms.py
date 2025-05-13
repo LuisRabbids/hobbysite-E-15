@@ -13,3 +13,8 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'product_type', 'description', 'price', 'stock', 'status']
+        exclude = ['owner']
+        widgets = {
+            'product_type': forms.Select(),
+            'status': forms.Select(),
+        }

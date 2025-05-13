@@ -70,6 +70,8 @@ def product_create(request):
             prod.owner = request.user.profile
             prod.save()
             return redirect('merchstore:product-detail', pk=prod.pk)
+    else:
+        form = ProductForm()
 
     context = {'form': form}
     return render(request, 'merchstore/product_form.html', context)

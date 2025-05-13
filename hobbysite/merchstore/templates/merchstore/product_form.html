@@ -1,15 +1,13 @@
 {% extends 'homepage.html' %}
 
-{% block title %}{% if view.object %}Edit Product{% else %}Add Product{% endif %} | Merch Store{% endblock %}
+{% block title %}Add Product | Merch Store{% endblock %}
 
 {% block content %}
-  <h2>{% if view.object %}Edit Product{% else %}Add Product{% endif %}</h2>
+  <h2>Add New Product</h2>
   <form method="post">
     {% csrf_token %}
-    <ul>
-      {{ form.as_ul }}
-    </ul>
-    <button type="submit">{% if view.object %}Update{% else %}Create{% endif %}</button>
+    {{ form.as_p }}
+    <button type="submit">Save</button>
   </form>
 {% endblock %}
 
