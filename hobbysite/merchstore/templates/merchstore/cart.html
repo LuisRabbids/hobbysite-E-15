@@ -1,20 +1,23 @@
 {% extends 'homepage.html' %}
 
-{% block title %}Your Cart | Merch Store{% endblock %}
+{% block title %}My Cart | Merch Store{% endblock %}
 
 {% block content %}
-  <h2>Your Cart</h2>
-  <ul>
-    {% for t in object_list %}
-      <li>
-        {{ t.product.name }} × {{ t.amount }} — {{ t.get_status_display }}
-      </li>
-    {% empty %}
-      <li>Your cart is empty.</li>
+  <h2>My Cart</h2>
+
+  {% if grouped_transactions %}
+    {% for seller, transactions in grouped_transactions %}
+      <h3>Seller: {{ seller.user.username }}</h3>
+      <ul>
+        {% for trans in transactions %}
+          <li>
+            {{ trans.product.name }} – ₱{{ trans.product.price }} × {{ trans.amount }}
+            = ₱{{ trans.product.price|floatformat:2|add:""|floatformat:2|floatformat:2|add:""|floatformat:2 }} <!-- total -->
+          </li>
+        {% endfor %}
+      </ul>
     {% endfor %}
-  </ul>
-  {% if object_list %}
-    <p><a href="{% url 'merchstore:checkout' %}">Proceed to Checkout</a></p>
+  {% else %}
+    <p>Your cart is empty.</p>
   {% endif %}
 {% endblock %}
-

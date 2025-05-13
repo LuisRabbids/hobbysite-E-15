@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import render, redirect, get_object_or_404
@@ -88,7 +89,7 @@ def product_edit(request, pk):
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
             prod = form.save(commit=False)
-            
+
             if prod.stock == 0:
                 prod.status = 'Out of stock'
             else:
@@ -104,10 +105,17 @@ def product_edit(request, pk):
 
 @login_required
 def cart(request):
-    items = Transaction.objects.filter(
-        buyer=request.user.profile, status='on_cart')
-    context = {'transactions': items}
+    items = Transaction.objects.select_related('product__owner').filter(
+        buyer=request.user.profile, status='on_cart'
+    )
+
+    grouped = defaultdict(list)
+    for item in items:
+        grouped[item.product.owner].append(item)
+
+    context = {'grouped_transactions': grouped.items(),}
     return render(request, 'merchstore/cart.html', context)
+
 
 
 @login_required
