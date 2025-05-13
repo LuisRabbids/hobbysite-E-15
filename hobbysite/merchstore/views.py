@@ -4,7 +4,6 @@ from .models import Product, Transaction, ProductType
 from .forms import ProductForm, TransactionForm
 from user_management.models import Profile
 
-User = get_user_model()
 
 @login_required
 def product_list(request):
