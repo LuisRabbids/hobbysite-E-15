@@ -54,6 +54,7 @@
             <p>
                 {% if user.is_authenticated %}
                     Hi {{ user.username }}!
+                    <a href="{% url 'user_management:update_profile' user.profile.display_name %}">Change Display Name</a>
                     <form method="post" action="{% url 'logout' %}" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="logout-button">
@@ -75,7 +76,9 @@
             <h2>Our Apps:</h2>
             <p>
                 <a href="{% url 'wiki:article_list' %}">Wiki</a> |
-                <a href="{% url 'forum:thread-list' %}">Forum</a>
+                <a href="{% url 'forum:thread-list' %}">Forum</a> |
+
+                <!-- put your other app links here -->
             </p>
         </nav>
         
