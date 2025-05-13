@@ -9,11 +9,15 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-@login_required
 def thread_list(request):
     all_threads = Thread.objects.select_related('category').all()
-    user_threads = all_threads.filter(author=request.user.profile)
-    other_threads = all_threads.exclude(author=request.user.profile)
+
+    user_threads = []
+    other_threads = all_threads
+
+    if request.user.is_authenticated:
+        user_threads = all_threads.filter(author=request.user.profile)
+        other_threads = all_threads.exclude(author=request.user.profile)
 
     categories = ThreadCategory.objects.all()
     categorized_threads = {}
@@ -27,15 +31,16 @@ def thread_list(request):
     return render(request, 'forum/thread_list.html', context)
 
 
-@login_required
 def thread_detail(request, pk):
     thread = get_object_or_404(Thread, pk=pk)
     comments = Comment.objects.filter(thread=thread)
-    related_threads = Thread.objects.filter(
-        category=thread.category).exclude(pk=pk)[:2]
+    related_threads = Thread.objects.filter(category=thread.category).exclude(pk=pk)[:2]
 
     form = CommentForm()
+
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return redirect('login')  # or show error
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
