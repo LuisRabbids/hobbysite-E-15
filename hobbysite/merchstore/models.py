@@ -19,7 +19,7 @@ class Product(models.Model):
         ProductType,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
     owner = models.ForeignKey(
         Profile,

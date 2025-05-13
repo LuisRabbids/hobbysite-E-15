@@ -7,7 +7,7 @@ from user_management.models import Profile
 
 @login_required
 def product_list(request):
-    all_products = Product.objects.select_related('product_type').all()
+    all_products = Product.objects.select_related('product_type').all().order_by('name')
     user_profile = request.user.profile
     user_products = all_products.filter(owner=user_profile)
     other_products = all_products.exclude(owner=user_profile)
