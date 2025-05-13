@@ -87,11 +87,19 @@ def product_edit(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
-            prod = form.save()
-            return redirect('merchstore:product-detail', pk=prod.pk)
+            prod = form.save(commit=False)
+            
+            if prod.stock == 0:
+                prod.status = 'Out of stock'
+            else:
+                prod.status = 'Available'
 
-    context = {'form': form, 'product': product}
-    return render(request, 'merchstore/product_form.html', context)
+            prod.save()
+            return redirect('merchstore:product-detail', pk=prod.pk)
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'merchstore/product_form.html', {'form': form, 'product': product})
 
 
 @login_required
