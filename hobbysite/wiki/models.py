@@ -1,7 +1,6 @@
 # wiki/models.py
 from django.db import models
-from django.contrib.auth.models import User 
-from django.conf import settings 
+from user_management.models import Profile
 
 class ArticleCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -21,7 +20,7 @@ class Article(models.Model):
     # settings.AUTH_USER_MODEL is preferred over directly importing User
     # in case you have a custom user model in the future.
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wiki_articles"
+        Profile, on_delete=models.CASCADE, related_name="wiki_articles"
     )
     entry = models.TextField()
     header_image = models.ImageField(
@@ -44,7 +43,7 @@ class Article(models.Model):
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
     
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wiki_comments')
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='wiki_comments')
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
 
