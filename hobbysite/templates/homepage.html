@@ -48,26 +48,33 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to the Hobby Site!</h1>
-        <nav>
-            <p>
-                {% if user.is_authenticated %}
-                    Hi {{ user.username }}!
-                    <a href="{% url 'user_management:update_profile' user.profile.display_name %}">Change Display Name</a>
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="logout-button">
-                            Logout
-                        </button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}">Login</a> |
-                    <a href="{% url 'register' %}">Register</a>
-                {% endif %}
-            </p>
-        </nav>
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="margin: 0;">Welcome to the Hobby Site!</h1>
+            <nav>
+                <p>
+                    {% if user.is_authenticated %}
+                        Hi {{ user.username }}!
+                        <a href="{% url 'user_management:update_profile' user.profile.display_name %}">Change Display Name</a>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="logout-button">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a> |
+                        <a href="{% url 'register' %}">Register</a>
+                    {% endif %}
+                </p>
+            </nav>
+        </div>
+    
+        {% if user.is_authenticated %}
+            <div style="margin-left: auto;">
+                <a href="{% url 'merchstore:cart' %}" style="font-weight: bold;">🛒 Cart</a>
+            </div>
+        {% endif %}
     </header>
+    
 
     <hr>
 
