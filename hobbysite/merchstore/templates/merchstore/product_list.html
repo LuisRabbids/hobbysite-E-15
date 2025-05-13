@@ -3,22 +3,27 @@
 {% block title %}All Products | Merch Store{% endblock %}
 
 {% block content %}
-  <h2>My Products</h2>
-  {% if user_products %}
-    <ul>
-      {% for p in user_products %}
-        <li>
-          <a href="{% url 'merchstore:product-detail' p.id %}">{{ p.name }}</a>
-          (<a href="{% url 'merchstore:product-edit' p.id %}">Edit</a>)
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>You haven’t added any products yet.</p>
+  {% if user.is_authenticated %}
+    <h2>My Products</h2>
+    {% if user_products %}
+      <ul>
+        {% for p in user_products %}
+          <li>
+            <a href="{% url 'merchstore:product-detail' p.id %}">{{ p.name }}</a>
+            (<a href="{% url 'merchstore:product-edit' p.id %}">Edit</a>)
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>You haven’t added any products yet.</p>
+    {% endif %}
   {% endif %}
 
   <h2>All Products</h2>
-  <p><a href="{% url 'merchstore:product-add' %}">Add New Product</a></p>
+  {% if user.is_authenticated %}
+    <p><a href="{% url 'merchstore:product-add' %}">Add New Product</a></p>
+  {% endif %}
+
   {% if other_products %}
     <ul>
       {% for product in other_products %}

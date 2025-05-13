@@ -5,12 +5,16 @@ from .forms import ProductForm, TransactionForm
 from user_management.models import Profile
 
 
-@login_required
 def product_list(request):
-    all_products = Product.objects.select_related('product_type').all().order_by('name')
-    user_profile = request.user.profile
-    user_products = all_products.filter(owner=user_profile)
-    other_products = all_products.exclude(owner=user_profile)
+    all_products = Product.objects.select_related('product_type', 'owner__user').all().order_by('name')
+
+    user_products = None
+    other_products = all_products
+
+    if request.user.is_authenticated:
+        user_profile = request.user.profile
+        user_products = all_products.filter(owner=user_profile)
+        other_products = all_products.exclude(owner=user_profile)
 
     context = {
         'user_products': user_products,
@@ -19,7 +23,6 @@ def product_list(request):
     return render(request, 'merchstore/product_list.html', context)
 
 
-@login_required
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     can_buy = (product.owner != request.user.profile and product.stock > 0)
