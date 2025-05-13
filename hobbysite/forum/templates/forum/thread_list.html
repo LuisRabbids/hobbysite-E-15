@@ -3,14 +3,16 @@
 {% block title %}Forum Threads | Hobby Site{% endblock %}
 
 {% block content %}
-<h2>Your Threads</h2>
-<ul>
-  {% for thread in user_threads %}
-    <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }}</li>
-  {% empty %}
-    <li>You haven't created any threads yet.</li>
-  {% endfor %}
-</ul>
+{% if user.is_authenticated %}
+  <h2>Your Threads</h2>
+  <ul>
+    {% for thread in user_threads %}
+      <li><a href="{% url 'forum:thread-detail' thread.pk %}">{{ thread.title }}</a> - {{ thread.author.display_name }}</li>
+    {% empty %}
+      <li>You haven't created any threads yet.</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
 <h2>All Threads</h2>
 {% for category, threads in categorized_threads.items %}
