@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>{% if view.object %}Edit Product{% else %}Add Product{% endif %}</title>
+</head>
+<body>
+    <h1>{% if view.object %}Edit Product{% else %}Add Product{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {{ form.as_ul }}
+        </ul>
+        <button type="submit">{% if view.object %}Update{% else %}Create{% endif %}</button>
+    </form>
+</body>
+</html>
