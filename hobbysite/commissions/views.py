@@ -3,6 +3,11 @@ from .models import Commission, Comment, Job, JobApplication
 
 def commissions_list(request):
     commissions = Commission.objects.all().order_by('-status', '-created_on').values()
+    if(request.method == "POST"):
+        c = Commission()
+        c.created = request.POST.get('title')
+        ja = JobApplication()
+        ja.applied = request.POST.get('job')
     return render(request, 'commissions/commissions_list.html', {'commissions': commissions})
 
 def commission_detail(request, commission_id):
