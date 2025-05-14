@@ -91,6 +91,13 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# Temp measure till we get an actual unified login-logout page
+LOGIN_REDIRECT_URL = "/blog/articles"
+LOGOUT_REDIRECT_URL = "/accounts/login"
+# Equally temp measure until we unify the media folder
+MEDIA_ROOT = BASE_DIR/'blog/media'
+MEDIA_URL = 'blog/media/'
+
 
 
 # Password validation

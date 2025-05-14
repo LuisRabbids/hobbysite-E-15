@@ -3,8 +3,6 @@ from django.urls import reverse
 from user_management.models import Profile
 
 
-
-
 # class for Article Category. Just a simple text field
 # This works. Do not touch it
 class ArticleCategory(models.Model):
@@ -24,14 +22,15 @@ class Article (models.Model):
     title = models.CharField(max_length=255)
 
     # Connects it to the Article Category class
-    category = models.ForeignKey(
-        ArticleCategory, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(ArticleCategory, null=True, on_delete=models.SET_NULL, related_name='articles')
     entry = models.TextField()
 
-    # Gets made only once, when the model is created
-    created_on = models.DateTimeField(auto_now_add=True)
-    # Refreshes with any changes made.
-    last_updated = models.DateTimeField(auto_now=True)
+    headerImage = models.ImageField(upload_to='media/blog_images', null= True, blank = True, default = None) # Image for the header.
+    author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='articles')
+    
+
+    created_on = models.DateTimeField(auto_now_add = True) # Gets made only once, when the model is created
+    last_updated = models.DateTimeField(auto_now= True) # Refreshes with any changes made.
 
     class Meta:
         # Sorted by the date it was created, in descending order, newest first.
@@ -40,15 +39,10 @@ class Article (models.Model):
     def __str__(self):
         return self.title
     
-# Comment
-# Author - foreign key to Profile who created the comment, set to NULL when deleted
-
-
 class Comment (models.Model):
-    #TODO: THE REST OF THIS STUFF 
 
-    article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'article_title')
-    author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='profile_name')
+    article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'comments')
+    author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='comments')
     
     entry = models.TextField()
     # Gets made only once, when the model is created
@@ -59,3 +53,8 @@ class Comment (models.Model):
     class Meta:
         # Sorted by the date it was created, in ascending order, oldest first.
         ordering = ['created_on']
+
+    def __str__(self):
+        return f'Comment by {self.author.username} on {self.article.title}'
+
+    
