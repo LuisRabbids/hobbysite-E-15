@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ article.title }}</title>
-</head>
-<body>
+{% extends "homepage.html" %}
+{% load static %}
+
+{% block title %}Blog Articles{% endblock %}
+
+{% block content %}
     <h1>{{ article.title }}</h1>
     <h2>Category: {{ article.category }}</h2>
     <h3>{{ article.entry }}</h3>
@@ -18,39 +18,51 @@
         <p><em>No image available for this article.</em></p>
     {% endif %}
 
-    {% if comment.article == article.title %}
-    
-        {% for comment in comments %}
-            <h4>Comment from :{{ comment.author }}</h4>
-            <h4>{{ comment.entry }}</h4>
-        {% endfor %}
-    {% else %}
+ <h3>Leave a Comment</h3>
+  {% if user.is_authenticated %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% else %}
+    <p>You must <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to leave a comment.</p>
+  {% endif %}
 
-    <p> No Comments yet.</p>   
-    {% endif %}
-
-
-    {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-            <button type="submit">Logout</button>
-            </form>
-    {% else %}
-        <a href="{% url 'blog:login' %}">Login </a>
-    {% endif %}
 
     {% if user.is_authenticated and user == article.author %}
     |   <a href="{% url 'blog:edit' pk=article.pk %}">Edit Article</a>
     {% endif %}
    
         
-    <!-- IMPORTANT! To make sure that the right link gets displayed. Place the appname before the 
-     field it must access! -->
+  <h3>Comments</h3>
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <strong>{{ comment.author.user.username }}</strong> ({{ comment.created_on|date:"M d, Y H:i" }})
+          <p>{{ comment.entry }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No comments yet.</p>
+  {% endif %}
 
-    <h4>Comment from :{{ comment.author }}</h4>
-    <h4>{{ comment.entry }}</h4>
+  <hr>
+
+  <h3>More from {{ article.author.user.username }}</h3>
+  <ul>
+    {% for related in related_articles %}
+      <li>
+        <a href="{% url 'blog:article_detail' related.pk %}">{{ related.title }}</a>
+      </li>
+    {% empty %}
+      <li>No other articles from this author.</li>
+    {% endfor %}
+  </ul>
 
     <h6><a href="{% url 'blog:article_list' %}">Back to Blog Articles</a></h6>
-</body>
-</html>
+
+{% endblock %}
+

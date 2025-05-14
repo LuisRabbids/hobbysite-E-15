@@ -5,8 +5,15 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = ['title', 'category', 'entry', 'headerImage']
+        widgets = {
+            'category': forms.Select(),
+        }
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = Comment 
+        model = Comment
         fields = ['entry']
+        widgets = {
+            'entry': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add your comment...'}),
+        }

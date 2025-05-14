@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+from user_management.models import Profile
 
 
 # class for Article Category. Just a simple text field
@@ -22,13 +22,11 @@ class Article (models.Model):
     title = models.CharField(max_length=255)
 
     # Connects it to the Article Category class
-    category = models.ForeignKey(
-        ArticleCategory, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(ArticleCategory, null=True, on_delete=models.SET_NULL, related_name='articles')
     entry = models.TextField()
 
     headerImage = models.ImageField(upload_to='media/blog_header_images', null= True, blank = True, default = None) # Image for the header.
-    #TODO All the other associated stuff. Might have to edit though
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_articles')
+    author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='articles')
     
 
     created_on = models.DateTimeField(auto_now_add = True) # Gets made only once, when the model is created
@@ -44,7 +42,7 @@ class Article (models.Model):
 class Comment (models.Model):
 
     article = models.ForeignKey(Article, null=True, on_delete=models.CASCADE, related_name= 'comments')
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='blog_comments')
+    author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='comments')
     
     entry = models.TextField()
     # Gets made only once, when the model is created
