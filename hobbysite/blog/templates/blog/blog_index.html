@@ -1,8 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Blog Articles</title>
-</head>
+{% extends "homepage.html" %}
+{% load static %}
+
+{% block title %}Blog Articles{% endblock %}
+
+{% block content %}
 <body>
     <h1>Blog Articles</h1>
     <ul>
@@ -33,3 +34,5 @@
     </ul>
 </body>
 </html>
+
+{% endblock %}

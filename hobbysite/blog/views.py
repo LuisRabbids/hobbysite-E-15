@@ -27,7 +27,7 @@ class ArticlesListView(ListView):
     context_object_name = 'articles'
 
 class CreateArticle(CreateView):
-    #Thing that allows users to make new recipies
+    #Thing that allows users to make new Articles
     model = Article
     template_name = "blog/add.html"
     form_class = ArticleForm
