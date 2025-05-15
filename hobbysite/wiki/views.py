@@ -69,7 +69,7 @@ class ArticleDetailView(DetailView):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.article = self.object
-            comment.author = request.user
+            comment.author = request.user.profile
             comment.save()
             return redirect(self.object.get_absolute_url()) # Redirect back to the article detail page
         else:
@@ -85,7 +85,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     template_name = 'wiki/article_form.html'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user # Set author to logged-in user
+        form.instance.author = self.request.user.profile # Set author to logged-in user
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -105,7 +105,7 @@ class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         # Check if the logged-in user is the author of the article
         article = self.get_object()
-        return self.request.user == article.author
+        return self.request.user.profile == article.author
 
     def get_success_url(self):
         return self.object.get_absolute_url() # Assumes get_absolute_url is defined on Article model

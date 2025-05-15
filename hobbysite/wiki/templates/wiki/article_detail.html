@@ -5,7 +5,7 @@
     <h1>{{ article.title }}</h1>
     <p>
         Category: {{ article.category.name|default:"Uncategorized" }} |
-        Author: {{ article.author.username }} |
+        Author: {{ article.author.display_name }} |
         Created: {{ article.created_on|date:"F d, Y H:i" }} |
         Updated: {{ article.updated_on|date:"F d, Y H:i" }}
     </p>
@@ -24,7 +24,7 @@
 
     <p>
         <a href="{{ back_to_list_url }}">Back to Article List</a>
-        {% if user.is_authenticated and user == article.author %}
+        {% if user.is_authenticated and article.author == request.user.profile %}
             | <a href="{% url 'wiki:article_update' pk=article.pk %}">Edit Article</a>
         {% endif %}
     </p>
@@ -56,7 +56,7 @@
     {% for comment in comments %}
         <div class="comment">
             <p>
-                <strong>{{ comment.author.username }}</strong>
+                <strong>{{ comment.author.display_name }}</strong>
                 <small>on {{ comment.created_on|date:"F d, Y H:i" }}</small>
             </p>
             <p>{{ comment.entry|linebreaksbr }}</p>
