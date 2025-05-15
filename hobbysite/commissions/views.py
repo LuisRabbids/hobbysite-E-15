@@ -39,7 +39,7 @@ def commission_detail(request, pk):
                 application.save()
                 return redirect('commissions:commission_detail')
 
-    return render(request, '/commission_detail.html', {'commission': commission, 'job': job, 'form': form, 'is_author': is_author, 'can_apply', can_apply})
+    return render(request, '/commission_detail.html', {'commission': commission, 'job': job, 'form': form, 'is_author': is_author, 'can_apply': can_apply})
 
 @login_required
 def commission_create(request):
