@@ -1,10 +1,6 @@
 from django.db import models
 from user_management.models import Profile
 
-class Profile(models.Model):
-    user = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
-
 class Commission(models.Model):
     commission_status = [ #creates list for commission status
         ('o','Open'),
