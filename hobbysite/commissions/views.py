@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Commission, Comment, Job, JobApplication
+from .forms import CommissionForm
 
 def commissions_list(request):
     commissions = Commission.objects.all().order_by('-status', '-created_on').values()
@@ -14,11 +15,15 @@ def commission_detail(request, commission_id):
     commission = get_object_or_404(Commission, id=commission_id), Job.objects.all()
     return render(request, 'commissions/commission_detail.html', {'commission': commission})
 
-def detail(request):
-
+@login_required
+def commission_create(request):
+    model = Commission()
+    fields = '__all__'
+    form_class = CommissionForm
 
 @login_required
-def create(request):
-
-@login_required
-def update(request):
+def commission_update(request):
+    model = Commission()
+    fields = '__all__'
+    template_name = 'commission_detail.html'
+    form_class = CommissionForm
