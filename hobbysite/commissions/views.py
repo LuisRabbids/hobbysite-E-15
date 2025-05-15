@@ -29,9 +29,6 @@ def commission_create(request):
             comm = form.save(commit=False)
             comm.author = request.user.profile
 
-
-
-
 @login_required
 def commission_update(request):
     model = Commission()
