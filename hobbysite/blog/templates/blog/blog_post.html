@@ -40,7 +40,7 @@
     <ul>
       {% for comment in comments %}
         <li>
-          <strong>{{ comment.author.user.username }}</strong> ({{ comment.created_on|date:"M d, Y H:i" }})
+          <strong>{{ comment.author.user.profile.display_name }}</strong> ({{ comment.created_on|date:"M d, Y H:i" }})
           <p>{{ comment.entry }}</p>
         </li>
       {% endfor %}
