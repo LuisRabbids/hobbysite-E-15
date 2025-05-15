@@ -2,6 +2,8 @@ from django.shortcuts import render
 from .models import Commission, Comment, Job, JobApplication
 from .forms import CommissionForm
 
+User = get_user_model()
+
 def commissions_list(request):
     commissions = Commission.objects.all().order_by('-status', '-created_on').values()
     if request.method == "POST":
@@ -12,7 +14,8 @@ def commissions_list(request):
     return render(request, 'commissions/commissions_list.html', {'commissions': commissions})
 
 def commission_detail(request, commission_id):
-    commission = get_object_or_404(Commission, id=commission_id), Job.objects.all()
+    commission = get_object_or_404(Commission, id=commission_id)
+    jobs = Job.objects.all()
     return render(request, 'commissions/commission_detail.html', {'commission': commission})
 
 @login_required
@@ -28,9 +31,10 @@ def commission_create(request):
 
 
 
+
 @login_required
 def commission_update(request):
     model = Commission()
     fields = '__all__'
     template_name = 'commission_detail.html'
-    form_class = CommissionForm
+    form = CommissionForm
