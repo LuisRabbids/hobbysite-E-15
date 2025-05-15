@@ -19,6 +19,10 @@ def commissions_list(request):
 def commission_detail(request, commission_id):
     commission = get_object_or_404(Commission, id=commission_id)
     jobs = Job.objects.all()
+    #manpower
+    #apply to job
+    #jobapp entries
+    #logged in user
     return render(request, 'commissions/commission_detail.html', {'commission': commission})
 
 @login_required
