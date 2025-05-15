@@ -1,11 +1,13 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Commission, Comment
+from user_management.models import Profile
 
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
 
-class UserAdmin(admin.BaseUserAdmin):
+class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInline,]
 
 class CommissionAdmin(admin.ModelAdmin):

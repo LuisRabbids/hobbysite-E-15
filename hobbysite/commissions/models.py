@@ -1,8 +1,5 @@
 from django.db import models
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
+from user_management.models import Profile
 
 class Commission(models.Model):
     commission_status = [ #creates list for commission status

@@ -1,0 +1,52 @@
+{% extends 'homepage.html' %}
+
+{% block title %}{{ thread.title }} | Hobby Site{% endblock %}
+
+{% block content %}
+<h2>{{ thread.title }}</h2>
+<p><strong>Category:</strong> {{ thread.category }}</p>
+<p><strong>By:</strong> {{ thread.author.display_name }} on {{ thread.created_on|date:"F j, Y, g:i A" }}</p>
+<p>{{ thread.entry }}</p>
+
+{% if thread.image %}
+  <img src="{{ thread.image.url }}" alt="Thread Image">
+{% endif %}
+
+{% if thread.author == request.user.profile %}
+  <p><a href="{% url 'forum:thread-edit' thread.pk %}">Edit Thread</a></p>
+{% endif %}
+
+<h3>Related Threads</h3>
+<ul>
+  {% for t in related_threads %}
+    <li><a href="{% url 'forum:thread-detail' t.pk %}">{{ t.title }}</a></li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'forum:thread-list' %}">Back to Threads</a>
+
+<h3>Comments</h3>
+<ul>
+  {% for comment in comments %}
+    <li>
+      <p>{{ comment.entry }}</p>
+      <p style="margin-left: 1em;">
+        - {{ comment.author.display_name }} on {{ comment.created_on|date:"F j, Y, g:i A" }}
+      </p>
+    </li>
+  {% empty %}
+    <li>No comments yet.</li>
+  {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+  <h4>Leave a comment:</h4>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post Comment</button>
+  </form>
+{% else %}
+  <p>You must be logged in to comment.</p>
+{% endif %}
+{% endblock %}
