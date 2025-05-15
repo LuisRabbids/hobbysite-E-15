@@ -4,7 +4,7 @@ from .forms import CommissionForm
 
 def commissions_list(request):
     commissions = Commission.objects.all().order_by('-status', '-created_on').values()
-    if(request.method == "POST"):
+    if request.method == "POST":
         c = Commission()
         c.created = request.POST.get('title')
         ja = JobApplication()
@@ -19,7 +19,14 @@ def commission_detail(request, commission_id):
 def commission_create(request):
     model = Commission()
     fields = '__all__'
-    form_class = CommissionForm
+    form = CommissionForm()
+    if request.method == "POST":
+        form = CommissionForm(request.POST)
+        if form.is_valid():
+            comm = form.save(commit=False)
+            comm.author = request.user.profile
+
+
 
 @login_required
 def commission_update(request):
