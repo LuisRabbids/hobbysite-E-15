@@ -54,7 +54,7 @@
             <nav>
                 <p>
                     {% if user.is_authenticated %}
-                        Hi {{ user.username }}!
+                        Hi {{ user.profile.display_name }}!
                         <a href="{% url 'user_management:update_profile' user.profile.display_name %}">Change Display Name</a>
                         <form method="post" action="{% url 'logout' %}" style="display: inline;">
                             {% csrf_token %}
@@ -70,7 +70,8 @@
     
         {% if user.is_authenticated %}
             <div style="margin-left: auto;">
-                <a href="{% url 'merchstore:cart' %}" style="font-weight: bold;">🛒 Cart</a>
+                <a href="{% url 'merchstore:cart' %}" style="font-weight: bold;">🛒 Cart</a> | 
+                <a href="{% url 'merchstore:transactions' %}" style="font-weight: bold;">Transactions</a>
             </div>
         {% endif %}
     </header>
