@@ -1,4 +1,5 @@
 from collections import defaultdict
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import render, redirect, get_object_or_404
@@ -117,10 +118,30 @@ def cart(request):
     return render(request, 'merchstore/cart.html', context)
 
 
+@login_required
+def checkout(request):
+    if request.method == 'POST':
+        buyer_profile = request.user.profile
+        cart_items = Transaction.objects.filter(buyer=buyer_profile, status='on_cart')
+
+        if not cart_items.exists():
+            messages.warning(request, "Your cart is empty.")
+            return redirect('merchstore:cart')
+
+        cart_items.update(status='to_pay')
+        messages.success(request, "Your order has been placed successfully!")
+
+    return redirect('merchstore:cart')
+
 
 @login_required
 def transactions(request):
     items = Transaction.objects.filter(
         product__owner=request.user.profile).exclude(status='on_cart')
-    context = {'transactions': items}
+
+    grouped = defaultdict(list)
+    for item in items:
+        grouped[item.buyer].append(item)
+
+    context = {'grouped_transactions': grouped.items()}
     return render(request, 'merchstore/transactions.html', context)

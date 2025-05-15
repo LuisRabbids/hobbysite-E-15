@@ -7,17 +7,23 @@
 
   {% if grouped_transactions %}
     {% for seller, transactions in grouped_transactions %}
-      <h3>Seller: {{ seller.user.username }}</h3>
+      <h3>Seller: {{ seller.user.profile.display_name }}</h3>
       <ul>
         {% for trans in transactions %}
           <li>
             {{ trans.product.name }} – ₱{{ trans.product.price }} × {{ trans.amount }}
-            = ₱{{ trans.product.price|floatformat:2|add:""|floatformat:2|floatformat:2|add:""|floatformat:2 }} <!-- total -->
           </li>
         {% endfor %}
       </ul>
     {% endfor %}
+
+    <form action="{% url 'merchstore:checkout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit">Buy All Items</button>
+    </form>
+
   {% else %}
     <p>Your cart is empty.</p>
   {% endif %}
 {% endblock %}
+
