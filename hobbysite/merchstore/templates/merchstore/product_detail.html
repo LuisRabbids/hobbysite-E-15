@@ -3,7 +3,7 @@
 {% block title %}{{ product.name }} | Product Details{% endblock %}
 
 {% block content %}
-  <h2>{{ product.name }}</h2>
+  <h2>{{ product.name }} - {{ product.owner.user.profile.display_name }}</h2>
   <p>{{ product.description }}</p>
   <p>₱{{ product.price }} — {{ product.stock }} left</p>
   <p>Type: {{ product.product_type.name }}</p>
