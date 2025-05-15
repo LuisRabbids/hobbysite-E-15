@@ -1,38 +1,49 @@
-# wiki/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required # For function-based views if needed
+from django.contrib.auth.decorators import login_required  # For function-based views if needed
 from .models import Article, ArticleCategory, Comment
 from .forms import ArticleForm, CommentForm
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch
 
-# wiki/views.py
-
-# ... (other imports and views) ...
 
 class ArticleListView(ListView):
     model = Article
     template_name = 'wiki/article_list.html'
-    context_object_name = 'articles' # This isn't directly used if you rely on categories_with_articles
+    context_object_name = 'articles'  # Not directly used—kept for completeness
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Always fetch all articles for category grouping
-        all_articles_for_grouping_qs = Article.objects.select_related('author', 'category').all()
+        # Base queryset for all articles (with related objects for performance)
+        all_articles_qs = Article.objects.select_related('author', 'category')
 
-        categories_with_articles = ArticleCategory.objects.prefetch_related(
-            Prefetch(
-                'articles', # Assumes Article.category has related_name='articles' or you use article_set
-                queryset=all_articles_for_grouping_qs
+        # --- 1.  Gather the logged-in user’s own articles  -------------------
+        user_articles = Article.objects.none()
+        if self.request.user.is_authenticated:
+            user_profile = self.request.user.profile
+            user_articles = all_articles_qs.filter(author=user_profile)
+            # Remove them from the queryset that will populate “All Articles”
+            all_articles_qs = all_articles_qs.exclude(author=user_profile)
+
+        # --- 2.  Prefetch the remaining articles into their categories -------
+        categories_with_articles = (
+            ArticleCategory.objects
+            .prefetch_related(
+                Prefetch('articles', queryset=all_articles_qs)
             )
-        ).distinct().order_by('name') # Order categories by name
+            .order_by('name')
+        )
 
-        context['categories_with_articles'] = categories_with_articles
-        context['create_article_url'] = reverse_lazy('wiki:article_create')
+        # --- 3.  Add everything to the template context  ---------------------
+        context.update({
+            "user_articles": user_articles,
+            "categories_with_articles": categories_with_articles,
+            "create_article_url": reverse_lazy("wiki:article_create"),
+        })
         return context
+
 
 class ArticleDetailView(DetailView):
     model = Article
@@ -44,14 +55,16 @@ class ArticleDetailView(DetailView):
         article = self.get_object()
 
         if article.category:
-            related_articles = Article.objects.filter(category=article.category)\
-                                            .exclude(pk=article.pk)\
-                                            .order_by('?')[:2] # Get 2 random ones
-            context['related_articles'] = related_articles
+            context['related_articles'] = (
+                Article.objects
+                .filter(category=article.category)
+                .exclude(pk=article.pk)
+                .order_by('?')[:2]
+            )
         else:
             context['related_articles'] = Article.objects.none()
 
-        context['comments'] = article.comments.all() # .order_by('-created_on') is handled by model Meta
+        context['comments'] = article.comments.all()
 
         if self.request.user.is_authenticated:
             context['comment_form'] = CommentForm()
@@ -61,9 +74,9 @@ class ArticleDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('login') # Or handle as an error
+            return redirect('login')
 
-        self.object = self.get_object() # Get the article object
+        self.object = self.get_object()
         form = CommentForm(request.POST)
 
         if form.is_valid():
@@ -71,12 +84,11 @@ class ArticleDetailView(DetailView):
             comment.article = self.object
             comment.author = request.user.profile
             comment.save()
-            return redirect(self.object.get_absolute_url()) # Redirect back to the article detail page
-        else:
-            # If form is not valid, re-render the page with the form and errors
-            context = self.get_context_data() # Get existing context
-            context['comment_form'] = form # Overwrite with the form containing errors
-            return self.render_to_response(context)
+            return redirect(self.object.get_absolute_url())
+
+        context = self.get_context_data()
+        context['comment_form'] = form
+        return self.render_to_response(context)
 
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
@@ -85,17 +97,17 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     template_name = 'wiki/article_form.html'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user.profile # Set author to logged-in user
+        form.instance.author = self.request.user.profile
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Redirect to the detail view of the created article
-        return self.object.get_absolute_url() # Assumes get_absolute_url is defined on Article model
+        return self.object.get_absolute_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['view_title'] = "Create New Wiki Article"
         return context
+
 
 class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Article
@@ -103,12 +115,11 @@ class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'wiki/article_form.html'
 
     def test_func(self):
-        # Check if the logged-in user is the author of the article
         article = self.get_object()
         return self.request.user.profile == article.author
 
     def get_success_url(self):
-        return self.object.get_absolute_url() # Assumes get_absolute_url is defined on Article model
+        return self.object.get_absolute_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

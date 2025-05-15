@@ -8,43 +8,51 @@
 
     {% if user.is_authenticated %}
         <p><a href="{{ create_article_url }}">Create New Article</a></p>
-        <hr> {# Optional separator #}
+        <hr>
+
+        {# ───────────────  YOUR ARTICLES  ─────────────── #}
+        <h2>Your Articles</h2>
+        {% if user_articles %}
+            <ul>
+                {% for article in user_articles %}
+                    <li>
+                        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                        ({{ article.category.name|default:"Uncategorized" }})
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven’t written any articles yet.</p>
+        {% endif %}
+        <hr>
     {% endif %}
 
+    {# ───────────────  ALL OTHER ARTICLES  ─────────────── #}
     <h2>All Articles</h2>
     {% if categories_with_articles %}
         {% for category in categories_with_articles %}
-            {# Only display the category heading if it actually has articles after prefetching #}
             {% if category.articles.all %}
                 <h3>{{ category.name }}</h3>
                 <ul>
                     {% for article in category.articles.all %}
                         <li>
                             <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
-                            {# You can add author here if you want #}
-                            {# (Author: {{ article.author.username }}) #}
                         </li>
                     {% endfor %}
                 </ul>
             {% endif %}
         {% endfor %}
     {% else %}
-         <p>No articles found in any category.</p> {# Simplified message #}
+        <p>No articles found in any category.</p>
     {% endif %}
 
-    {# A more general "no articles at all" message if categories_with_articles is empty OR all categories are empty #}
-    {% comment %}
-        A better way to check if there are *any* articles at all would be to pass
-        Article.objects.exists() or Article.objects.count() to the context if needed
-        for a very generic "No articles in the wiki yet" message when the above loop produces nothing.
-        For now, the above should be okay.
-    {% endcomment %}
-    {% if not categories_with_articles %} {# This condition means no categories exist or none have articles #}
+    {# Fallback when absolutely no articles exist in the wiki #}
+    {% if not categories_with_articles %}
         {% if user.is_authenticated %}
-            <p>There are no articles in the wiki yet. Be the first to <a href="{{ create_article_url }}">create one</a>!</p>
+            <p>There are no articles yet—be the first to
+               <a href="{{ create_article_url }}">create one</a>!</p>
         {% else %}
             <p>There are no articles in the wiki yet.</p>
         {% endif %}
     {% endif %}
-
 {% endblock %}
