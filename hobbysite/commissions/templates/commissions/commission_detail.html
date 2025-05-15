@@ -1,4 +1,5 @@
 <html>
+{% extends 'homepage.html' %}
 <head>
     <title>{{ commission.title }}</title>
 </head>
@@ -8,10 +9,7 @@
     <p>{{ commission.description }}</p>
     <p>Created On: {{ commission.created_on }}</p>
     <p>Last Updated: {{ commission.updated_on }}</p>
-<<<<<<< HEAD
     
-=======
->>>>>>> commissions-alexys
     <h2>Comments</h2>
     <ul>
         {% for comment in comments %}
@@ -21,14 +19,15 @@
             <p>{{ comment.created_on }}</p>
             <p>{{ comment.updated_on }}</p>
         </li>
-<<<<<<< HEAD
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for job in jobs %}
+        <li>{{ job.role }} (Manpower Required: {{ job.manpower_required }})</a> 
+        </li>
         {% endfor %}
     </ul>
     
     <a href="{% url 'commissions_list' %}">Back to the Commissions List</a>
-=======
-    </ul>
-    <a href="{% url 'commission_list' %}">Back to the Commissions List</a>
->>>>>>> commissions-alexys
 </body>
 </html>

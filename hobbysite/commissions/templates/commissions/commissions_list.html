@@ -1,11 +1,13 @@
 <html>
+{% extends 'homepage.html' %}
     <head>
         <title>Commissions List</title>
     </head>
     <body>
         <h1>Commissions List</h1>
+        <p><a href="{% url '/commission_create' %}">Create New Commission</a></p>
         <ul>
-            {% for commission in commission %}
+            {% for commission in commissions %}
             <li>
                 <a href="{% url 'commission_detail' commission.id %}">{{ commission.title }} (People Required: {{ commission.people_required }})</a> 
             </li>

@@ -43,26 +43,26 @@ def commission_detail(request, pk):
 
 @login_required
 def commission_create(request):
-    commission = Commission()
-    fields = '__all__'
     form = CommissionForm()
     if request.method == "POST":
-        form = CommissionForm(request.POST)
-        if form.is_valid():
-            comm = form.save(commit=False)
-            comm.author = request.user.profile
-            return redirect(request, '/commission_detail.html', pk = commission.pk)
+        form1 = CommissionForm(request.POST)
+        form2 = JobForm(request.POST)
+        if form1.is_valid():
+            commission = form.save(commit=False)
+            commission.author = request.user.profile
+            commission.save()
+            return redirect('/commission_create.html', pk = commission.pk)
+        if form2.is_valid():
+            job = form.save(commit=False)
+            job.save()
+            return redirect('/job_create.html', pk = commission.pk)
     return render(request, '/commission_create.html', {'form': form})
 
 @login_required
 def commission_update(request, pk):
     commission = get_object_or_404(Commission, pk=pk)
     if commission.author != request.user.profile:
-        return return redirect(request, '/commission_detail.html', pk = pk)
-    form = CommissionForm()
-    if request.method == "POST":
-        form = CommissionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect(request, '/commission_detail.html', pk = commission.pk)
+        return redirect('/commission_detail.html', pk=commission.pk)
+    if Job.objects.all().status.count('f') == Commission.people_required():
+        commission.status = 'f'
     return render(request, '/commission_create.html', {'form': form, 'commission': commission})
