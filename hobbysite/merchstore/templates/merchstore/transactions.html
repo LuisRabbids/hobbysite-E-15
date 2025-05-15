@@ -1,0 +1,23 @@
+{% extends 'homepage.html' %}
+
+{% block title %}Transactions | Merch Store{% endblock %}
+
+{% block content %}
+  <h2>Transactions as Seller</h2>
+
+  {% if grouped_transactions %}
+    {% for buyer, transactions in grouped_transactions %}
+      <h3>Buyer: {{ buyer.user.profile.display_name }}</h3>
+      <ul>
+        {% for trans in transactions %}
+          <li>
+            {{ trans.product.name }} – ₱{{ trans.product.price }} × {{ trans.amount }} — Status: {{ trans.get_status_display }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  {% else %}
+    <p>No transactions yet.</p>
+  {% endif %}
+{% endblock %}
+

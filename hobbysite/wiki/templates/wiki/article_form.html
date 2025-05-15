@@ -1,0 +1,27 @@
+<!-- wiki/templates/wiki/article_form.html -->
+{% extends "homepage.html" %} <!-- Or your site's base template -->
+
+{% block content %}
+    <h1>{{ view_title|default:"Manage Article" }}</h1> {# view_title comes from context #}
+
+    <form method="post" enctype="multipart/form-data"> {# enctype is crucial for file uploads #}
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        {# Display non-editable fields if it's an update view and they exist #}
+        {% if form.instance.pk %} {# Checks if this is an update (instance has a primary key) #}
+            {% if form.instance.author %}
+                <p><strong>Author:</strong> {{ form.instance.author.username }}</p>
+            {% endif %}
+            {% if form.instance.created_on %}
+                <p><strong>Created On:</strong> {{ form.instance.created_on|date:"F d, Y H:i" }}</p>
+            {% endif %}
+        {% endif %}
+
+        <button type="submit">
+            {% if form.instance.pk %}Update Article{% else %}Create Article{% endif %}
+        </button>
+    </form>
+
+    <p><a href="{% if form.instance.pk %}{{ form.instance.get_absolute_url }}{% else %}{% url 'wiki:article_list' %}{% endif %}">Cancel</a></p>
+{% endblock %}

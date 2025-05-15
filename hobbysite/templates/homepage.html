@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hobby Site - {% block title %}Welcome{% endblock %}</title>
+    <style>
+        /* Basic styles for messages */
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            list-style-type: none; /* Ensure list bullets are not shown for messages */
+        }
+        .message.success { /* Django uses 'success' tag for messages.SUCCESS */
+            border-color: green;
+            background-color: #e6ffe6;
+            color: darkgreen;
+        }
+        .message.error { /* Django uses 'error' tag for messages.ERROR */
+            border-color: red;
+            background-color: #ffe6e6;
+            color: darkred;
+        }
+        .message.info { /* Django uses 'info' tag for messages.INFO */
+            border-color: blue;
+            background-color: #e6e6ff;
+            color: darkblue;
+        }
+        .message.warning { /* Django uses 'warning' tag for messages.WARNING */
+            border-color: orange;
+            background-color: #fff0e6;
+            color: #cc6600;
+        }
+
+        /* Style for the logout button to make it look like a link */
+        .logout-button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: blue; /* Or your preferred link color */
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: inherit; /* Inherit font from parent */
+            font-size: inherit;   /* Inherit font size from parent */
+        }
+        .logout-button:hover {
+            color: darkblue; /* Optional: Hover effect */
+        }
+    </style>
+</head>
+<body>
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="margin: 0;">Welcome to the Hobby Site!</h1>
+            <nav>
+                <p>
+                    {% if user.is_authenticated %}
+                        Hi {{ user.profile.display_name }}!
+                        <a href="{% url 'user_management:update_profile' user.profile.display_name %}">Change Display Name</a>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="logout-button">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a> |
+                        <a href="{% url 'register' %}">Register</a>
+                    {% endif %}
+                </p>
+            </nav>
+        </div>
+    
+        {% if user.is_authenticated %}
+            <div style="margin-left: auto;">
+                <a href="{% url 'merchstore:cart' %}" style="font-weight: bold;">🛒 Cart</a> | 
+                <a href="{% url 'merchstore:transactions' %}" style="font-weight: bold;">Transactions</a>
+            </div>
+        {% endif %}
+    </header>
+    
+
+    <hr>
+
+    <main>
+        <nav>
+            <h2>Our Pages:</h2>
+            <p>
+                <a href="{% url 'wiki:article_list' %}">Wiki</a> |
+                <a href="{% url 'forum:thread-list' %}">Forum</a> |
+                <a href="{% url 'merchstore:product-list' %}">Merch Store</a> |
+                <a href="{% url 'blog:article_list' %}"> Blog</a> |
+
+                <!-- put your other app links here -->
+            </p>
+        </nav>
+        
+
+        <hr>
+
+        {% if messages %}
+            <ul class="messages-container" style="padding: 0;"> {# Removed list-style-type from here as it's on .message now #}
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% block content %}
+            <!-- Default content for the homepage itself, if any -->
+            <p>This is the main hobby site. Select a page from the navigation bar to get started!</p>
+        {% endblock content %}
+    </main>
+
+    <hr>
+    <footer>
+        <p>© {% now "Y" %} HobbySite. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
