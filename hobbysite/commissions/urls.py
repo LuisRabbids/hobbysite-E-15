@@ -7,3 +7,4 @@ urlpatterns = [
     path('add/', views.commission_create, name='commission-create'),
     path('<int:pk>/edit/', views.commission_update, name='commission-update')
 ]
+app_name = 'commissions'

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from .models import Commission, Comment, Job, JobApplication
-from .forms import CommissionForm
+from .forms import CommissionForm, JobForm, JobApplicationForm
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

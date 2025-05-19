@@ -1,17 +1,19 @@
-<html>
 {% extends 'homepage.html' %}
-    <head>
-        <title>Commissions List</title>
-    </head>
+
+    {% block title %}
+
+    List of Commissions
+    {% endblock %}
+    {% block content %}
     <body>
         <h1>Commissions List</h1>
-        <p><a href="{% url '/commission_create' %}">Create New Commission</a></p>
+        <p><a href="{% url 'commissions:commission-create' %}">Create New Commission</a></p>
         <ul>
             {% for commission in commissions %}
             <li>
-                <a href="{% url 'commission_detail' commission.id %}">{{ commission.title }} (People Required: {{ commission.people_required }})</a> 
+                <a href="{% url 'commissions:commission_detail' commission.id %}">{{ commission.title }} (People Required: {{ commission.people_required }})</a> 
             </li>
             {% endfor %}
         </ul>
     </body>
-</html>
+{% endblock %}
