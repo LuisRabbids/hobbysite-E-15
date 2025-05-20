@@ -25,7 +25,7 @@ class Article (models.Model):
     category = models.ForeignKey(ArticleCategory, null=True, on_delete=models.SET_NULL, related_name='articles')
     entry = models.TextField()
 
-    headerImage = models.ImageField(upload_to='media/blog_images', null= True, blank = True, default = None) # Image for the header.
+    headerImage = models.ImageField(upload_to='images/blog_images', null= True, blank = True, default = None) # Image for the header.
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='articles')
     
 
