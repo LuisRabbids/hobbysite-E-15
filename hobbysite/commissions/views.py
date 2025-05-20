@@ -147,12 +147,7 @@ def commission_detail(request, pk):
             # Default status is PENDING, so no need to set it explicitly unless specified otherwise
             application.save()
             
-            # Check if job became full AFTER this application if status was auto-accepted
-            # For now, with PENDING default, only admin action makes it full.
-            # But let's call update_status_if_full in case rules change (e.g. auto-accept)
-            # or if manual DB changes make it full.
-            # For applications, the owner will accept them. This logic mostly for owner's view.
-            # The job's own update_status_if_full() will be key when applications are accepted.
+
 
             messages.success(request, f"Successfully applied for the job '{job_to_apply.role}'. Your application is pending.")
             return redirect(reverse('commissions:commission_detail', kwargs={'pk': commission.pk}))

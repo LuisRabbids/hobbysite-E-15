@@ -70,8 +70,7 @@ class Job(models.Model):
     )
 
     class Meta:
-        # Status (Open > Full), manpower_required (desc), role (asc)
-        # 'O' sorts after 'F'. So '-status' makes 'O' come first.
+        
         ordering = ['-status', '-manpower_required', 'role']
 
     def __str__(self):

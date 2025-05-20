@@ -73,30 +73,20 @@
 </div>
 
 <script>
-// Basic JavaScript for adding more job forms dynamically
+
 document.addEventListener('DOMContentLoaded', function() {
     const addJobButton = document.getElementById('add-job-form');
     const jobFormsContainer = document.getElementById('job-forms-container');
     const totalFormsInput = document.querySelector('input[name="jobs-TOTAL_FORMS"]');
-    const formsetPrefix = 'jobs'; // Make sure this matches your formset prefix
+    const formsetPrefix = 'jobs'; 
 
     if (addJobButton && jobFormsContainer && totalFormsInput) {
-        // Find one job form to use as a template (the empty one)
-        // This assumes the last form rendered by Django's formset.empty_form is what we want.
-        // Or, if job_formset.empty_form is not directly usable, we clone the last form.
-        // A robust way is to get empty_form if available, or clone last form.
-        // Django's empty form has ' __prefix__ ' placeholders.
+
         
         let emptyFormHtml = null;
-        const emptyFormNode = jobFormsContainer.querySelector('.job-form:last-child'); // simplistic, might grab a filled one
-                                                                                       // Better: server-render an empty form template
-                                                                                       // or find the one with __prefix__ if Django renders it
+        const emptyFormNode = jobFormsContainer.querySelector('.job-form:last-child'); 
         
-        // For simplicity, if we have job_formset.empty_form available in template directly:
-        // let emptyFormHtml = '{{ job_formset.empty_form.as_p|escapejs }}'; // Requires escaping
 
-        // Let's try to clone the last form and clear its values (simplistic client-side clone)
-        // More robust: use Django's formset.empty_form if you can render it into a JS variable.
         const lastForm = jobFormsContainer.querySelector('.job-form:last-child');
         if (lastForm) {
             emptyFormHtml = lastForm.outerHTML;
