@@ -1,33 +1,154 @@
-<html>
 {% extends 'homepage.html' %}
-<head>
-    <title>{{ commission.title }}</title>
-</head>
-<body>
-    <h1>{{ commission.title }}</h1>
-    <p>People Required: {{ commission.people_required }}</p>
-    <p>{{ commission.description }}</p>
-    <p>Created On: {{ commission.created_on }}</p>
-    <p>Last Updated: {{ commission.updated_on }}</p>
-    
-    <h2>Comments</h2>
-    <ul>
-        {% for comment in comments %}
-        <li>
-            <p>{{ comment.commission }}</p>
-            <p>{{ comment.entry }}</p>
-            <p>{{ comment.created_on }}</p>
-            <p>{{ comment.updated_on }}</p>
-        </li>
+{% load static %}
+{% load commission_tags %} {# Make sure this matches the filename of your .py file in templatetags #}
+
+{% block title %}{{ commission.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
-    </ul>
-    <ul>
-        {% for job in jobs %}
-        <li>{{ job.role }} (Manpower Required: {{ job.manpower_required }})</a> 
-        </li>
-        {% endfor %}
-    </ul>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{{ commission.title }}</h1>
+        {% if is_author %}
+            <a href="{% url 'commissions:commission_update' commission.pk %}" class="btn btn-warning">Edit Commission</a>
+        {% endif %}
+    </div>
     
-    <a href="{% url 'commissions_list' %}">Back to the Commissions List</a>
-</body>
-</html>
+    <p><strong>Author:</strong> {{ commission.author.user.username|default:commission.author.id }}</p> {# Fallback to author.id if user is not available #}
+    <p><strong>Status:</strong> <span class="badge 
+        {% if commission.status == commission.OPEN %}bg-success
+        {% elif commission.status == commission.FULL %}bg-warning text-dark
+        {% elif commission.status == commission.COMPLETED %}bg-primary
+        {% elif commission.status == commission.DISCONTINUED %}bg-secondary
+        {% else %}bg-light text-dark{% endif %}">
+        {{ commission.get_status_display }}
+    </span></p>
+    <p><strong>Description:</strong></p>
+    <div class="card card-body bg-light mb-3">
+        <p style="white-space: pre-wrap;">{{ commission.description }}</p>
+    </div>
+    <p><strong>Created On:</strong> {{ commission.created_on|date:"Y-m-d H:i" }}</p>
+    <p><strong>Last Updated:</strong> {{ commission.updated_on|date:"Y-m-d H:i" }}</p>
+
+    <hr>
+
+    <h3>Overall Manpower Status</h3>
+    <p><strong>Total Manpower Required for Commission:</strong> {{ total_manpower|default:"0" }}</p>
+    <p><strong>Total Open Manpower Slots:</strong> {{ open_manpower|default:"0" }}</p>
+
+    <hr>
+    
+    <h3>Jobs for this Commission</h3>
+    {% if jobs_for_template %}
+        <div class="list-group">
+            {% for job_detail in jobs_for_template %}
+            <div class="list-group-item mb-3 shadow-sm">
+                <div class="d-flex w-100 justify-content-between">
+                    <h4 class="mb-1">{{ job_detail.job.role }}</h4>
+                    <small class="text-muted">Status: {{ job_detail.job.get_status_display }}</small>
+                </div>
+                <p class="mb-1"><strong>Manpower Required:</strong> {{ job_detail.job.manpower_required }} | 
+                                <strong>Accepted:</strong> {{ job_detail.job.accepted_count }} | 
+                                <strong>Open Slots:</strong> {{ job_detail.job.open_manpower_slots }}
+                </p>
+
+                {% if user.is_authenticated %}
+                    {% if not is_author %}
+                        {% if job_detail.can_apply %}
+                            <form method="post" action="{% url 'commissions:commission_detail' commission.pk %}" class="mt-2"> {# Ensure action points to current page #}
+                                {% csrf_token %}
+                                <input type="hidden" name="apply_job_id" value="{{ job_detail.job.id }}">
+                                {{ job_application_form }} {# Render the (empty) job application form if needed, or just button #}
+                                <button type="submit" class="btn btn-success btn-sm">Apply for {{ job_detail.job.role }}</button>
+                            </form>
+                        {% elif job_detail.user_application_status %}
+                            <p class="text-info mt-2 mb-0">Your application status: <strong>{{ job_detail.user_application_status }}</strong></p>
+                        {% elif job_detail.is_job_full_display %}
+                             <p class="text-muted mt-2 mb-0">This job is full or no longer open for applications.</p>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <p><a href="{% url 'login' %}?next={{ request.path|urlencode }}">Log in</a> to apply for this job.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No jobs have been defined for this commission yet.</p>
+    {% endif %}
+
+    {% if is_author and applications_for_commission %}
+    <hr>
+    <h3>Manage Job Applications</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Job Role</th>
+                    <th>Applicant</th>
+                    <th>Applied On</th>
+                    <th>Current Status</th>
+                    <th>Change Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications_for_commission %}
+                <tr>
+                    <td>{{ app.job.role }}</td>
+                    <td>{{ app.applicant.user.username|default:app.applicant.id }}</td> {# Fallback to applicant.id #}
+                    <td>{{ app.applied_on|date:"Y-m-d H:i" }}</td>
+                    <td>{{ app.get_status_display }}</td>
+                    <form method="post" action="{% url 'commissions:commission_detail' commission.pk %}"> {# Ensure action points to current page #}
+                        {% csrf_token %}
+                        <input type="hidden" name="update_application_id" value="{{ app.id }}">
+                        <td>
+                            {% with app_form=application_update_forms|get_item:app.id %}
+                                {% if app_form %}
+                                    {{ app_form.status }} {# Renders the 'status' select widget #}
+                                    
+                                    {% if app_form.status.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in app_form.status.errors %}
+                                                {{ error }}<br>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if app_form.non_field_errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in app_form.non_field_errors %}
+                                                {{ error }}<br>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-warning small">Form not available.</p>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td><button type="submit" class="btn btn-sm btn-info">Update</button></td>
+                    </form>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No applications received yet for this commission's jobs.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'commissions:commissions_list' %}" class="btn btn-outline-primary mt-3 mb-3">Back to Commissions List</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'homepage.html' %}
+{% load static %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ form_title }}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <h2>Commission Details</h2>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% for field in form %}
+            <div class="form-group mb-3">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <hr>
+        <h2>Jobs</h2>
+        {{ job_formset.management_form }}
+        {% if job_formset.non_form_errors %}
+            <div class="alert alert-danger">{{ job_formset.non_form_errors }}</div>
+        {% endif %}
+
+        <div id="job-forms-container">
+            {% for job_form in job_formset %}
+            <div class="job-form mb-3 p-3 border rounded">
+                {% if job_form.non_field_errors %}
+                    <div class="alert alert-danger">{{ job_form.non_field_errors }}</div>
+                {% endif %}
+                {% for hidden_field in job_form.hidden_fields %}
+                    {{ hidden_field }}
+                {% endfor %}
+                <div class="row">
+                    {% for field in job_form.visible_fields %}
+                    <div class="form-group col-md-{% if field.name == 'role' %}5{% elif field.name == 'manpower_required' %}3{% elif field.name == 'status' %}3{% else %}12{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    {% if job_form.instance.pk and job_formset.can_delete %}
+                    <div class="form-group col-md-1 align-self-end">
+                        {{ job_form.DELETE.label_tag }} {{ job_form.DELETE }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-job-form" class="btn btn-outline-success btn-sm mb-3">Add Another Job</button>
+
+        <hr>
+        <button type="submit" class="btn btn-primary">{% if commission %}Update{% else %}Create{% endif %} Commission</button>
+        {% if commission %}
+        <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-secondary">Cancel</a>
+        {% else %}
+        <a href="{% url 'commissions:commissions_list' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+// Basic JavaScript for adding more job forms dynamically
+document.addEventListener('DOMContentLoaded', function() {
+    const addJobButton = document.getElementById('add-job-form');
+    const jobFormsContainer = document.getElementById('job-forms-container');
+    const totalFormsInput = document.querySelector('input[name="jobs-TOTAL_FORMS"]');
+    const formsetPrefix = 'jobs'; // Make sure this matches your formset prefix
+
+    if (addJobButton && jobFormsContainer && totalFormsInput) {
+        // Find one job form to use as a template (the empty one)
+        // This assumes the last form rendered by Django's formset.empty_form is what we want.
+        // Or, if job_formset.empty_form is not directly usable, we clone the last form.
+        // A robust way is to get empty_form if available, or clone last form.
+        // Django's empty form has ' __prefix__ ' placeholders.
+        
+        let emptyFormHtml = null;
+        const emptyFormNode = jobFormsContainer.querySelector('.job-form:last-child'); // simplistic, might grab a filled one
+                                                                                       // Better: server-render an empty form template
+                                                                                       // or find the one with __prefix__ if Django renders it
+        
+        // For simplicity, if we have job_formset.empty_form available in template directly:
+        // let emptyFormHtml = '{{ job_formset.empty_form.as_p|escapejs }}'; // Requires escaping
+
+        // Let's try to clone the last form and clear its values (simplistic client-side clone)
+        // More robust: use Django's formset.empty_form if you can render it into a JS variable.
+        const lastForm = jobFormsContainer.querySelector('.job-form:last-child');
+        if (lastForm) {
+            emptyFormHtml = lastForm.outerHTML;
+        }
+
+
+        addJobButton.addEventListener('click', function() {
+            if (!emptyFormHtml) {
+                console.error("Could not find a job form template to clone.");
+                return;
+            }
+            let formNum = parseInt(totalFormsInput.value);
+            let newFormHtml = emptyFormHtml.replace(new RegExp(formsetPrefix + '-\\d+-', 'g'), formsetPrefix + '-' + formNum + '-');
+            newFormHtml = newFormHtml.replace(new RegExp('value="[^"]*"', 'g'), 'value=""'); // Clear values, very basic
+            
+            const newFormElement = document.createElement('div');
+            newFormElement.innerHTML = newFormHtml; // This creates a div wrapper
+            
+            // Clean up inputs for the new form
+            const actualFormDiv = newFormElement.firstChild; // Get the .job-form div
+            actualFormDiv.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => input.value = '');
+            actualFormDiv.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+            actualFormDiv.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(check => check.checked = false);
+            
+            // Remove ID from cloned PK field if it exists (e.g. `id_jobs-X-id`)
+            const idField = actualFormDiv.querySelector(`input[name="${formsetPrefix}-${formNum}-id"]`);
+            if (idField) idField.removeAttribute('value');
+
+
+            jobFormsContainer.appendChild(actualFormDiv);
+            totalFormsInput.value = formNum + 1;
+        });
+    } else {
+        console.warn("Formset JS elements not found. Dynamic job forms might not work.");
+    }
+});
+</script>
+{% endblock %}

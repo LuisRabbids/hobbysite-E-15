@@ -1,22 +1,44 @@
 from django import forms
-from .models import Commission, Comment, Job, JobApplication
+from django.forms import inlineformset_factory
+from .models import Commission, Job, JobApplication # NO Comment model here
 
 class CommissionForm(forms.ModelForm):
     class Meta:
         model = Commission
-        fields = ['title', 'author', 'description', 'status', 'people_required']
-    
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['commission', 'entry',]
+        fields = ['title', 'description', 'status']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 5}),
+            'status': forms.Select(choices=Commission.STATUS_CHOICES),
+        }
 
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ['commission', 'role', 'manpower_required', 'status',]
+        fields = ['role', 'manpower_required', 'status']
+        widgets = {
+            'status': forms.Select(choices=Job.STATUS_CHOICES),
+        }
+
+JobFormSet = inlineformset_factory(
+    Commission,
+    Job,
+    form=JobForm,
+    extra=1,
+    can_delete=True,
+    fk_name='commission'
+)
 
 class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
-        fields = ['job', 'applicant', 'status']
+        fields = []
+
+class JobApplicationUpdateForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ['status']
+        widgets = {
+            # Ensure choices are dynamically pulled if they can change,
+            # or ensure they are correct here. STATUS_CHOICES on model is fine.
+            'status': forms.Select(choices=JobApplication.STATUS_CHOICES),
+        }

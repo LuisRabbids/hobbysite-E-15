@@ -1,87 +1,127 @@
 from django.db import models
-from user_management.models import Profile
+from django.conf import settings # Recommended for ForeignKey to User/Profile
+from user_management.models import Profile # Assuming this is your Profile model
+from django.utils import timezone
+from django.db.models import Case, When, Value, IntegerField, Sum, Count, F, Q
 
 class Commission(models.Model):
-    commission_status = [ #creates list for commission status
-        ('o','Open'),
-        ('f','Full'),
-        ('c','Completed'),
-        ('d','Discontinued'),
+    OPEN = 'O'
+    FULL = 'F'
+    COMPLETED = 'C'
+    DISCONTINUED = 'D'
+    STATUS_CHOICES = [
+        (OPEN, 'Open'),
+        (FULL, 'Full'),
+        (COMPLETED, 'Completed'),
+        (DISCONTINUED, 'Discontinued'),
     ]
 
     title = models.CharField(max_length=255)
     author = models.ForeignKey(
         Profile,
-        null=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='commissions_authored'
     )
     description = models.TextField()
-    status = models.CharField(max_length=1, choices=commission_status, default='o')
-    people_required = models.IntegerField()
-    created_on = models.DateTimeField(auto_now_add=True)  # Only set on creation
-    updated_on = models.DateTimeField(auto_now=True) # Updates with modification date
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default=OPEN
+    )
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['created_on']  # Sorted by commission creation date in ascending order
+        ordering = ['created_on'] # Default sort: oldest first as per requirement
 
     def __str__(self):
         return self.title
 
-class Comment(models.Model):
-    commission = models.ForeignKey(
-        Commission,
-        null=True,
-        on_delete=models.CASCADE)
-    entry = models.TextField()
-    created_on = models.DateTimeField(auto_now_add=True)  # Only set on creation
-    updated_on = models.DateTimeField(auto_now=True) # Updates with modification date
+    def get_total_manpower_required(self):
+        return self.jobs.aggregate(total_manpower=Sum('manpower_required'))['total_manpower'] or 0
 
-    class Meta:
-        ordering = ['-created_on']  # Sorted by comment creation date in descending order
+    def get_accepted_applicants_count(self):
+        return JobApplication.objects.filter(job__commission=self, status=JobApplication.ACCEPTED).count()
 
-    def __str__(self):
-        return self.name
+    def get_open_manpower(self):
+        total_manpower = self.get_total_manpower_required()
+        accepted_count = self.get_accepted_applicants_count()
+        return total_manpower - accepted_count
 
 class Job(models.Model):
-    job_status = [ #creates list for job status
-        ('o','Open'),
-        ('f','Full'),
+    OPEN = 'O'
+    FULL = 'F'
+    STATUS_CHOICES = [
+        (OPEN, 'Open'),
+        (FULL, 'Full'),
     ]
 
     commission = models.ForeignKey(
         Commission,
-        null=True,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='jobs'
+    )
     role = models.CharField(max_length=255)
-    manpower_required = models.IntegerField()
-    status = models.CharField(max_length=1, choices=job_status, default='o')
+    manpower_required = models.PositiveIntegerField() # Whole number
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default=OPEN
+    )
 
     class Meta:
-        ordering = ['-status', 'manpower_required', 'role']  # Sorted by status and manpower (descending), then role (ascending)
+        # Status (Open > Full), manpower_required (desc), role (asc)
+        # 'O' sorts after 'F'. So '-status' makes 'O' come first.
+        ordering = ['-status', '-manpower_required', 'role']
 
     def __str__(self):
-        return self.name
+        return f"{self.role} for {self.commission.title}"
+
+    def get_accepted_applicants_count(self):
+        return self.applications.filter(status=JobApplication.ACCEPTED).count()
+
+    def is_full(self):
+        return self.get_accepted_applicants_count() >= self.manpower_required
+
+    def update_status_if_full(self):
+        if self.is_full() and self.status == Job.OPEN:
+            self.status = Job.FULL
+            self.save(update_fields=['status'])
+            return True
+        return False
+
 
 class JobApplication(models.Model):
-    application_status = [ #creates list for job application status
-        ('p','Pending'),
-        ('a','Accepted'),
-        ('r','Rejected'),
+    PENDING = '1' # Values chosen for correct sorting
+    ACCEPTED = '2'
+    REJECTED = '3'
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
     ]
 
     job = models.ForeignKey(
         Job,
-        null=True,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='applications'
+    )
     applicant = models.ForeignKey(
         Profile,
-        null=True,
-        on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=application_status, default='p')
-    applied_on = models.DateTimeField(auto_now_add=True)  # Only set on creation
-    
+        on_delete=models.CASCADE,
+        related_name='job_applications'
+    )
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default=PENDING
+    )
+    applied_on = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        ordering = ['-status', '-applied_on']  # Sorted by status and applied on date in descending order
+        # Sorted by status (Pending > Accepted > Rejected), then Applied On (desc)
+        ordering = ['status', '-applied_on']
+        unique_together = ('job', 'applicant') # A user can only apply once to a specific job
 
     def __str__(self):
-        return self.name
+        return f"Application by {self.applicant} for {self.job.role}"
